@@ -138,12 +138,9 @@
   <%
 String username = (String) session.getAttribute("uName");
 boolean isLoggedIn = (username != null);
-%>
- 
-
-    
-        
+%>    
   <header>
+ <header>
     <div class="top-bar">
         <img src="image/serial anak/tere liyee.png" height="60" class="logo"> <!-- Pastikan ukuran gambar disesuaikan -->
         <div class="navbar">
@@ -153,7 +150,7 @@ boolean isLoggedIn = (username != null);
                 <a href="allbooklist.jsp" class="navtext">All Book</a>
                 <a href="cart.jsp" class="navtext">Cart</a>
                 <% if (isLoggedIn) { %>
-                    <a href="#" class="navtext"> <%= username %></a>
+                    <a href="detail.jsp" class="navtext"> <%= username %></a>
                 <% } else { %>
                     <a href="login.jsp" class="navtext">Login</a>
                 <% } %>
