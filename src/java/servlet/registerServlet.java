@@ -25,7 +25,6 @@ public class registerServlet extends HttpServlet {
         user.setPassword(request.getParameter("password"));
 
         UserDAO userDAO = new UserDAO();
-        userDAO.registerUser(user);
         boolean success = userDAO.registerUser(user);
 
         if (success) {

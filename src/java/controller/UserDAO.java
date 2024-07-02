@@ -8,7 +8,7 @@ import model.registerBeans;
 
 public class UserDAO {
     public boolean registerUser(registerBeans user) {
-        String sql = "INSERT INTO user_db (name, username, password, email) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO user_db (nama_user, username, password, email) VALUES (?, ?, ?, ?)";
         try (Connection conn = new db().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getName());
