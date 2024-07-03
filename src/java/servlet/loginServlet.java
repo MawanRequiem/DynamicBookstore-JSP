@@ -36,6 +36,7 @@ public class loginServlet extends HttpServlet {
             ps.setString(1, login.getUsername());
             ps.setString(2, login.getPassword());
 
+            //TAMBAHKAN ROLE UNTUK ADMIN 
             rs = ps.executeQuery();
             if (rs.next()) {
                 HttpSession session = request.getSession();

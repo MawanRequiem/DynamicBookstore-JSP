@@ -93,6 +93,7 @@
                         <a href="update.jsp" class="btn btn-primary">Update</a>
                         <button type="button" class="btn btn-custom-red" onclick="confirmLogout()">Logout</button>
                         <button type="button" class="btn btn-custom-red" onclick="confirmDelete()">Delete Account</button>
+                        <button type="button" class="btn btn-custom-red" onclick="viewHistory()">View History</button>
                     </div>
                 </div>
             </div>
@@ -113,6 +114,12 @@
     function confirmDelete() {
         if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
             window.location.href = "DeleteServlet";
+        }
+    }
+        
+            function viewHistory() {
+        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+            window.location.href = "TranshistoryServlet";
         }
     }
 </script>
