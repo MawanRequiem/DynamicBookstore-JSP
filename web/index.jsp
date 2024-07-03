@@ -24,7 +24,7 @@
         if(counter > 3){
             counter = 1;
         }
-    }, 5000); 
+    }, 5000);
     </script>
     
     <style>
@@ -135,6 +135,7 @@
 
 <body>
     <!--<!-- Session -->
+    
   <%
 String username = (String) session.getAttribute("uName");
 boolean isLoggedIn = (username != null);
