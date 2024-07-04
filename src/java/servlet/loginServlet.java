@@ -51,7 +51,7 @@ public class loginServlet extends HttpServlet {
                 request.setAttribute("loginSuccess", true);
 
                 // Forward to the admin page
-                RequestDispatcher rd = request.getRequestDispatcher("eror.jsp");
+                RequestDispatcher rd = request.getRequestDispatcher("admin.jsp");
                 rd.forward(request, response);
             } 
             else {

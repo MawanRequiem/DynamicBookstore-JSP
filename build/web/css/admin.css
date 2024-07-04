@@ -1,0 +1,12 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand, .nav-link, .btn-outline-warning {
+    color: #ffc107 !important;
+}
+
+.table img {
+    width: 100px;
+    height: auto;
+}
