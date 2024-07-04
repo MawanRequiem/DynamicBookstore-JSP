@@ -9,7 +9,29 @@ import model.registerBeans;
 import model.userBeans;
 
 public class UserDAO {
-    public boolean registerUser(registerBeans user) {
+    // Method to check if the email is already in use
+    public boolean isEmailUsed(String email) {
+        String sql = "SELECT 1 FROM user_db WHERE email = ?";
+        try (Connection conn = new db().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            System.err.println("Message: " + e.getMessage());
+            return true; // Assume email is used in case of error to prevent duplicate entry
+        }
+    }
+
+    // Updated registerUser method to return status strings
+    public String registerUser(registerBeans user) {
+        if (isEmailUsed(user.getEmail())) {
+            return "emailUsed";
+        }
+
         String sql = "INSERT INTO user_db (nama_user, username, password, email) VALUES (?, ?, ?, ?)";
         try (Connection conn = new db().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -18,16 +40,17 @@ public class UserDAO {
             ps.setString(3, user.getPassword());
             ps.setString(4, user.getEmail());
             int result = ps.executeUpdate();
-            return result > 0;
+            return result > 0 ? "success" : "failure";
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("SQL State: " + e.getSQLState());
             System.err.println("Error Code: " + e.getErrorCode());
             System.err.println("Message: " + e.getMessage());
-            return false;
+            return "failure";
         }
     }
 
+    // Other methods remain unchanged
     public userBeans getUserByUsername(String username) {
         String sql = "SELECT * FROM user_db WHERE username = ?";
         try (Connection conn = new db().getConnection();

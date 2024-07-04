@@ -1,4 +1,4 @@
-package Servlet;
+package servlet;
 
 import controller.UserDAO;
 import model.registerBeans;
@@ -25,13 +25,17 @@ public class registerServlet extends HttpServlet {
         user.setPassword(request.getParameter("password"));
 
         UserDAO userDAO = new UserDAO();
-        boolean success = userDAO.registerUser(user);
+        String registrationStatus = userDAO.registerUser(user);
 
-        if (success) {
-            response.sendRedirect("login.jsp");
+        if ("success".equals(registrationStatus)) {
+            request.setAttribute("registrationStatus", "success");
+        } else if ("emailUsed".equals(registrationStatus)) {
+            request.setAttribute("registrationStatus", "emailUsed");
         } else {
-            response.sendRedirect("register.jsp?error=true");
+            request.setAttribute("registrationStatus", "failure");
         }
+
+        request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
     @Override

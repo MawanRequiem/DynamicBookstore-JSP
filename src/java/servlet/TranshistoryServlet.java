@@ -1,4 +1,4 @@
-package Servlet;
+package servlet;
 
 import controller.TransactionDAO;
 import model.transaksiBeans;

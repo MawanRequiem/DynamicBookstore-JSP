@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <script src="jQuery 3.7.1.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
     <script>
     var counter = 1;
     setInterval(() => {
@@ -25,6 +25,14 @@
             counter = 1;
         }
     }, 5000);
+    
+    $(document).ready(function(){
+    var showCartNotification = '<%= session.getAttribute("showCartNotification") %>';
+    if (showCartNotification == 'true') {
+        $('#cartModal').modal('show');
+        <% session.setAttribute("showCartNotification", false); %>
+    }
+});
     </script>
     
     <style>
@@ -393,9 +401,40 @@ boolean isLoggedIn = (username != null);
       <p id="modal-genre">Genre</p>
       <p id="modal-synopsis">Synopsis</p>
       <button id="modal-link">Buy</button>
+      <button id="modal-link">Add To Cart</button>
     </div>
   </div>
 
+<!-- Add to cart buttons -->
+    <form action="AddToCartServlet" method="post">
+        <input type="hidden" name="bookTitle" value="Pulang">
+        <button type="submit">Add to Cart</button>
+    </form>
+
+    <form action="AddToCartServlet" method="post">
+        <input type="hidden" name="bookTitle" value="Daun yang Jatuh Tak Pernah Membenci Angin">
+        <button type="submit">Add to Cart</button>
+    </form>
+
+     <!-- Modal HTML -->
+    <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Cart Notification</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Your book has been added to the cart successfully!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
   <footer>

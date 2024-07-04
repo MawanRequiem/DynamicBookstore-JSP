@@ -1,4 +1,4 @@
-package Servlet;
+package servlet;
 
 import controller.UserDAO;
 import model.userBeans;

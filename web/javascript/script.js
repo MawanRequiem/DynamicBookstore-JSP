@@ -4,6 +4,8 @@
  */
 
 
+/* global title */
+
 let currentIndex = 0;
 let slideIndex = 0;
 let autoPlayInterval;
@@ -124,6 +126,23 @@ function openModal(event, title, author, price, genre, synopsis, imgSrc, bookLin
   document.getElementById('modal-link').onclick = () => { window.location.href = bookLink; };
   modal.style.display = "block";
 }
+
+// Code to add book to cart using AJAX
+    $.ajax({
+        url: 'AddToCartServlet',
+        type: 'POST',
+        data: {
+            bookId: title, // Assuming bookId is the title, you may need to adjust this
+            bookTitle: title
+        },
+        success: function(response) {
+            // Show cart notification if needed
+            $('#cartModal').modal('show');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error adding book to cart:', error);
+        }
+    });
 
 function closeModal() {
   document.getElementById('modal').style.display = "none";

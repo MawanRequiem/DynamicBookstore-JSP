@@ -428,27 +428,82 @@
             }
 
         </style>
-    </head>
-    <body>
-        <div class="container">
-    <div class="frame">
-        <div class="nav">
-            <ul class="links" style="text-align: center;">
-                <li class="signin-active"><a class="btn" style="color: #000;">Login</a></li>
-            </ul>
-        </div>
-        <div ng-app ng-init="checked = false">
-             <form class="form-signin" action="<%=request.getContextPath()%>/loginServlet" method="post" name="form"> 
-                <label for="username">Username</label>
-                <input class="form-styling" type="text" name="username" placeholder="" required>
-                <label for="password">Password</label>
-                <input class="form-styling" type="password" name="password" placeholder="" required>
-                <button class="btn-signin">Login</button>
-                <button class="btn-signin" type="button" onclick="window.location.href='index.jsp';">Cancel</button>
-                <div class="sign-up">Belum punya akun? <a href="register.jsp">Daftar di sini</a></div>
-            </form>
+   </head>
+<body>
+    <div class="container">
+        <div class="frame">
+            <div class="nav">
+                <ul class="links" style="text-align: center;">
+                    <li class="signin-active"><a class="btn" style="color: #000;">Login</a></li>
+                </ul>
+            </div>
+            <div ng-app ng-init="checked = false">
+                <form class="form-signin" action="<%=request.getContextPath()%>/loginServlet" method="post" name="form">
+                    <label for="username">Username</label>
+                    <input class="form-styling" type="text" name="username" placeholder="" required>
+                    <label for="password">Password</label>
+                    <input class="form-styling" type="password" name="password" placeholder="" required>
+                    <button class="btn-signin" type="submit">Login</button>
+                    <button class="btn-signin" type="button" onclick="window.location.href='index.jsp';">Cancel</button>
+                    <div class="sign-up">Belum punya akun? <a href="register.jsp">Daftar di sini</a></div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-    </body>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Login Successful</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You have successfully logged in.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='index.jsp';">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Login Failed</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Incorrect username or password. Please try again.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            <% if (request.getAttribute("loginSuccess") != null && (Boolean) request.getAttribute("loginSuccess")) { %>
+                $('#successModal').modal('show');
+            <% } else if (request.getAttribute("loginSuccess") != null && !(Boolean) request.getAttribute("loginSuccess")) { %>
+                $('#errorModal').modal('show');
+            <% } %>
+        });
+    </script>
+</body>
 </html>

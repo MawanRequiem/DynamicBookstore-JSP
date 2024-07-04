@@ -1,4 +1,4 @@
-package Servlet;
+package servlet;
 
 import db.db;
 import model.loginBeans;
@@ -20,7 +20,8 @@ public class loginServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Create a new loginBeans object and set its properties from the request parameters
+        
+         // Create a new loginBeans object and set its properties from the request parameters
         loginBeans login = new loginBeans();
         login.setUsername(request.getParameter("username"));
         login.setPassword(request.getParameter("password"));
@@ -31,27 +32,61 @@ public class loginServlet extends HttpServlet {
 
         try {
             conn = new db().setConnection();
-            String sql = "SELECT * FROM user_db WHERE username=? AND password=?";
-            ps = conn.prepareStatement(sql);
+
+            // Check if user is an admin
+            String adminSql = "SELECT * FROM admin_db WHERE username=? AND password=?";
+            ps = conn.prepareStatement(adminSql);
             ps.setString(1, login.getUsername());
             ps.setString(2, login.getPassword());
 
-            //TAMBAHKAN ROLE UNTUK ADMIN 
             rs = ps.executeQuery();
             if (rs.next()) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", login.getUsername());
                 session.setAttribute("login", true);
                 session.setAttribute("uName", login.getUsername());
+       
 
-                RequestDispatcher rd = request.getRequestDispatcher("loginBener.jsp");
+                // Set loginSuccess attribute to true
+                request.setAttribute("loginSuccess", true);
+
+                // Forward to the admin page
+                RequestDispatcher rd = request.getRequestDispatcher("eror.jsp");
                 rd.forward(request, response);
-            } else {
-                response.sendRedirect("login.jsp?error=true");
+            } 
+            else {
+                // Check if user is a regular user
+                String userSql = "SELECT * FROM user_db WHERE username=? AND password=?";
+                ps = conn.prepareStatement(userSql);
+                ps.setString(1, login.getUsername());
+                ps.setString(2, login.getPassword());
+
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", login.getUsername());
+                    session.setAttribute("login", true);
+                    session.setAttribute("uName", login.getUsername());
+                    
+
+                    // Set loginSuccess attribute to true
+                    request.setAttribute("loginSuccess", true);
+
+                    // Forward to the user page
+                    RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
+                    rd.forward(request, response);
+                } else {
+                    // Set loginSuccess attribute to false
+                    request.setAttribute("loginSuccess", false);
+
+                    // Forward to the login page to show the error modal
+                    RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
+                    rd.forward(request, response);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("eror.jsp");
         } finally {
             try {
                 if (rs != null) rs.close();
@@ -79,4 +114,5 @@ public class loginServlet extends HttpServlet {
     public String getServletInfo() {
         return "LoginServlet for handling login requests.";
     }
+    
 }

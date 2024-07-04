@@ -89,7 +89,7 @@
                         <label for="password">Password</label>
                         <p class="form-control-plaintext" id="password">••••••••</p>
                     </div>
-                    <div class="btn-group-custom">
+                     <div class="btn-group-custom">
                         <a href="update.jsp" class="btn btn-primary">Update</a>
                         <button type="button" class="btn btn-custom-red" onclick="confirmLogout()">Logout</button>
                         <button type="button" class="btn btn-custom-red" onclick="confirmDelete()">Delete Account</button>
@@ -100,24 +100,61 @@
         </div>
     </div>
 </div>
+ <!-- Modal Logout -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Logout Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a href="logoutServlet" class="btn btn-custom-red">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+                    
+                    <!-- Modal Delete Account -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Account Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your account? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a href="DeleteServlet" class="btn btn-custom-red">Delete Account</a>
+            </div>
+        </div>
+    </div>
+</div>
 
+                    
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    function confirmLogout() {
-        if (confirm("Are you sure you want to logout?")) {
-            window.location.href = "logoutServlet";
-        }
+   function confirmLogout() {
+        $('#logoutModal').modal('show');
     }
 
     function confirmDelete() {
-        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-            window.location.href = "DeleteServlet";
-        }
+        $('#deleteModal').modal('show');
     }
-        
-            function viewHistory() {
+     function viewHistory() {
         if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
             window.location.href = "TranshistoryServlet";
         }
