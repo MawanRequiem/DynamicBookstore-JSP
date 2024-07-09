@@ -12,7 +12,7 @@ import model.transaksiBeans;
 
 public class TransactionDAO {
     public List<transaksiBeans> getTransaksiByUsername(String username) {
-        String sql = "SELECT * FROM pembayaran WHERE nama_user = ?";
+        String sql = "SELECT * FROM orders WHERE username = ?";
         List<transaksiBeans> transaksiList = new ArrayList<transaksiBeans>();
         try (Connection conn = new db().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

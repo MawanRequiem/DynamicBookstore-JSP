@@ -27,20 +27,35 @@ public class updateServlet extends HttpServlet {
             return;
         }
 
-        userBeans user = new userBeans();
-        user.setName(request.getParameter("name"));
-        user.setUsername(currentUsername);
-        user.setEmail(request.getParameter("email"));
-        user.setPassword(request.getParameter("password"));
+        String newAddress = request.getParameter("address");
+        String newCity = request.getParameter("city");
+        String newPostCode = request.getParameter("postCode");
 
         UserDAO userDAO = new UserDAO();
-        boolean success = userDAO.updateUser(user);
+        userBeans user = userDAO.getUserByUsername(currentUsername);
 
-        if (success) {
-            session.setAttribute("uName", user.getUsername());
-            response.sendRedirect("detail.jsp");
+        if (user != null) {
+            // Update only the non-null parameters
+            if (newAddress != null && !newAddress.trim().isEmpty()) {
+                user.setAddress(newAddress);
+            }
+            if (newCity != null && !newCity.trim().isEmpty()) {
+                user.setCity(newCity);
+            }
+            if (newPostCode != null && !newPostCode.trim().isEmpty()) {
+                user.setPostCode(newPostCode);
+            }
+
+            boolean success = userDAO.updateUser(user);
+
+            if (success) {
+                session.setAttribute("uName", user.getUsername());
+                response.sendRedirect("detail.jsp");
+            } else {
+                response.sendRedirect("AccountDetails.jsp?error=true");
+            }
         } else {
-            response.sendRedirect("detail.jsp?error=true");
+            response.sendRedirect("login.jsp");
         }
     }
 

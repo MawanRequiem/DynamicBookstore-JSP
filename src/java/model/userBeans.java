@@ -5,6 +5,37 @@ public class userBeans {
     private String username;
     private String email;
     private String password;
+    private String address;
+    private String city;
+    private String postCode;
+
+    public String getPostCode() {
+        return postCode;
+    }
+
+    public void setPostCode(String postCode) {
+        this.postCode = postCode;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+   
 
     // Default constructor
     public userBeans() {

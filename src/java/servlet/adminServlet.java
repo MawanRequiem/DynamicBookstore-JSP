@@ -1,5 +1,5 @@
-// adminServlet.java
 package servlet;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -38,14 +38,15 @@ public class adminServlet extends HttpServlet {
                     addBook(request, response);
                     break;
                 case "edit":
+                    showEditForm(request, response);
+                    break;
+                case "update":
                     updateBook(request, response);
                     break;
                 case "delete":
                     deleteBook(request, response);
                     break;
                 case "list":
-                    listBooks(request, response);
-                    break;
                 default:
                     listBooks(request, response);
                     break;
@@ -58,10 +59,22 @@ public class adminServlet extends HttpServlet {
     private void addBook(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Part gambarBuku = request.getPart("gambarBuku");
         String namaBuku = request.getParameter("namaBuku");
-        double hargaBuku = Double.parseDouble(request.getParameter("hargaBuku"));
+        String hargaBukuStr = request.getParameter("hargaBuku");
         String genreBuku = request.getParameter("genreBuku");
+         String serialBuku = request.getParameter("serialBuku");
         String deskripsiBuku = request.getParameter("deskripsiBuku");
-        int stockBuku = Integer.parseInt(request.getParameter("stockBuku"));
+        String stockBukuStr = request.getParameter("stockBuku");
+
+        double hargaBuku = 0;
+        int stockBuku = 0;
+        try {
+            hargaBuku = Double.parseDouble(hargaBukuStr);
+            stockBuku = Integer.parseInt(stockBukuStr);
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid input for price or stock.");
+            listBooks(request, response);
+            return;
+        }
 
         InputStream gambarStream = gambarBuku.getInputStream();
 
@@ -70,55 +83,72 @@ public class adminServlet extends HttpServlet {
         book.setNama(namaBuku);
         book.setHarga(hargaBuku);
         book.setGenre(genreBuku);
+          book.setSerial(serialBuku);
         book.setDeskripsi(deskripsiBuku);
         book.setStock(stockBuku);
 
         boolean success = adminDao.addBook(book);
         if (success) {
-            response.sendRedirect("admin.jsp");
+            request.setAttribute("message", "Book added successfully");
         } else {
-            request.setAttribute("errorMessage", "Failed to add book.");
-            request.getRequestDispatcher("admin.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "Failed to add book");
         }
+        listBooks(request, response);
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int bookId = Integer.parseInt(request.getParameter("bookId"));
+        bookBeans existingBook = adminDao.getBookById(bookId);
+        request.setAttribute("book", existingBook);
+        request.getRequestDispatcher("editBookForm.jsp").forward(request, response);
     }
 
     private void updateBook(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("bookId"));
-        Part gambarBuku = request.getPart("gambarBuku");
         String namaBuku = request.getParameter("namaBuku");
-        double hargaBuku = Double.parseDouble(request.getParameter("hargaBuku"));
+        String hargaBukuStr = request.getParameter("hargaBuku");
         String genreBuku = request.getParameter("genreBuku");
+        String serialBuku = request.getParameter("serialBuku");
         String deskripsiBuku = request.getParameter("deskripsiBuku");
-        int stockBuku = Integer.parseInt(request.getParameter("stockBuku"));
+        String stockBukuStr = request.getParameter("stockBuku");
 
-        InputStream gambarStream = gambarBuku.getInputStream();
+        double hargaBuku = Double.parseDouble(hargaBukuStr);
+        int stockBuku = Integer.parseInt(stockBukuStr);
+
+        Part gambarBuku = request.getPart("gambarBuku");
+        InputStream gambarStream = (gambarBuku != null && gambarBuku.getSize() > 0) ? gambarBuku.getInputStream() : null;
 
         bookBeans book = new bookBeans();
         book.setId(id);
-        book.setGambar(gambarStream);
+        if (gambarStream != null) {
+            book.setGambar(gambarStream);
+        }
         book.setNama(namaBuku);
         book.setHarga(hargaBuku);
         book.setGenre(genreBuku);
+        book.setSerial(serialBuku);
         book.setDeskripsi(deskripsiBuku);
         book.setStock(stockBuku);
 
         boolean success = adminDao.updateBook(book);
         if (success) {
-            response.sendRedirect("admin.jsp");
+            request.setAttribute("message", "Book updated successfully");
         } else {
-            request.setAttribute("errorMessage", "Failed to update book.");
-            request.getRequestDispatcher("admin.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "Failed to update book");
         }
+        listBooks(request, response);
     }
 
-    private void deleteBook(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void deleteBook(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         int bookId = Integer.parseInt(request.getParameter("bookId"));
+
         boolean success = adminDao.deleteBook(bookId);
         if (success) {
-            response.sendRedirect("admin.jsp");
+            request.setAttribute("message", "Book deleted successfully");
         } else {
-            response.sendRedirect("admin.jsp?error=Failed to delete book.");
+            request.setAttribute("errorMessage", "Failed to delete book");
         }
+        listBooks(request, response);
     }
 
     private void listBooks(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

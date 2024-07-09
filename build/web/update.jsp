@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Account Details</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -28,6 +29,19 @@
             left: 20px;
             background-color: red;
             color: white;
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-group-append {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -71,7 +85,24 @@
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" value="<%= user.getPassword() %>" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" value="<%= user.getPassword() %>" required>
+                                <div class="input-group-append" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" value="<%= user.getAddress() %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" id="city" name="city" value="<%= user.getCity() %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="postCode">Postal Code</label>
+                            <input type="text" class="form-control" id="postCode" name="postCode" value="<%= user.getPostCode() %>">
                         </div>
                         <button type="submit" class="btn btn-primary">Update</button>
                     </form>
@@ -84,5 +115,21 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        var passwordField = document.getElementById('password');
+        var passwordFieldType = passwordField.getAttribute('type');
+        var icon = this.querySelector('i');
+        if (passwordFieldType === 'password') {
+            passwordField.setAttribute('type', 'text');
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.setAttribute('type', 'password');
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+</script>
 </body>
 </html>

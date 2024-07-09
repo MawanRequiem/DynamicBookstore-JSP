@@ -1,17 +1,20 @@
-// bookBeans.java
- package model;
+package model;
+
 import java.io.InputStream;
+import java.util.Base64;
+import java.io.ByteArrayOutputStream;
 
 public class bookBeans {
     private int id;
-    private InputStream gambar; // Store image as InputStream
+    private InputStream gambar;
     private String nama;
     private double harga;
     private String genre;
     private String deskripsi;
     private int stock;
+    private String serial;
 
-    // Getters and setters
+    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -32,4 +35,33 @@ public class bookBeans {
 
     public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+    
+    
+
+    // Convert InputStream to Base64 for image display in HTML
+    public String getImageBase64() {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = gambar.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            byte[] imageBytes = outputStream.toByteArray();
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            outputStream.close();
+            return base64Image;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

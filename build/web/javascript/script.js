@@ -60,10 +60,6 @@ function closeModalMain(modalId) {
   document.getElementById(modalId).style.display = "none";
 }
 
-
-
-
-
 $(document).ready(function() {
     // Sticky navbar with animation
     let lastScrollTop = 0;
@@ -113,41 +109,6 @@ function plusSlidesAllBook(carouselId, n) {
 document.querySelectorAll('.carousel-container').forEach((carousel) => {
   carousel.dataset.slideIndex = 0;
 });
-
-function openModal(event, title, author, price, genre, synopsis, imgSrc, bookLink) {
-  event.preventDefault();
-  const modal = document.getElementById('modal');
-  document.getElementById('modal-title').innerText = title;
-  document.getElementById('modal-author').innerText = author;
-  document.getElementById('modal-price').innerText = price;
-  document.getElementById('modal-genre').innerText = genre;
-  document.getElementById('modal-synopsis').innerText = synopsis;
-  document.getElementById('modal-img').src = imgSrc;
-  document.getElementById('modal-link').onclick = () => { window.location.href = bookLink; };
-  modal.style.display = "block";
-}
-
-// Code to add book to cart using AJAX
-    $.ajax({
-        url: 'AddToCartServlet',
-        type: 'POST',
-        data: {
-            bookId: title, // Assuming bookId is the title, you may need to adjust this
-            bookTitle: title
-        },
-        success: function(response) {
-            // Show cart notification if needed
-            $('#cartModal').modal('show');
-        },
-        error: function(xhr, status, error) {
-            console.error('Error adding book to cart:', error);
-        }
-    });
-
-function closeModal() {
-  document.getElementById('modal').style.display = "none";
-}
-
 window.onclick = function(event) {
   const modal = document.getElementById('modal');
   if (event.target === modal) {

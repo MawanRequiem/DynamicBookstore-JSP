@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Details</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -46,9 +47,16 @@
         .info-group label {
             font-weight: bold;
         }
+        .info-group {
+            position: relative;
+        }
+        #togglePassword {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+    
 <%
     String username = (String) session.getAttribute("uName");
     if (username == null) {
@@ -85,11 +93,84 @@
                         <label for="email">Email</label>
                         <p class="form-control-plaintext" id="email"><%= user.getEmail() %></p>
                     </div>
+                    
                     <div class="info-group">
-                        <label for="password">Password</label>
-                        <p class="form-control-plaintext" id="password">••••••••</p>
+                        <label for="address">Address</label>
+                        <%
+                            String address = user.getAddress();
+                            if (address == null || address.isEmpty()) {
+                        %>
+                            <form method="post" action="UpdateServlet">
+                                <input type="text" name="address" class="form-control" placeholder="Enter your address" required>
+                                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                            </form>
+                        <%
+                            } else {
+                        %>
+                            <p class="form-control-plaintext" id="address"><%= address %></p>
+                        <%
+                            }
+                        %>
                     </div>
-                     <div class="btn-group-custom">
+                    
+                    <div class="info-group">
+                        <label for="city">City</label>
+                        <%
+                            String city = user.getCity();
+                            if (city == null || city.isEmpty()) {
+                        %>
+                            <form method="post" action="UpdateServlet">
+                                <select name="city" class="form-control" required>
+                                    <option value="" disabled selected>Select your city</option>
+                                    <% String[] cities = {"Ambon", "Atambua", "Balikpapan", "Banda Aceh", "Bandar Lampung", "Bandung", "Banyuwangi", "Bau-Bau", "Bekasi", "Bengkulu", "Bima", "Binjai", "Bitung", "Bogor", "Bukittinggi", "Cilegon", "Cimahi", "Cirebon", "Denpasar", "Depok", "Dumai", "Ende", "Gorontalo", "Jakarta", "Jambi", "Jayapura", "Kendari", "Kotamobagu", "Kupang", "Langsa", "Lhokseumawe", "Lubuklinggau", "Luwuk", "Makassar", "Magelang", "Malang", "Manado", "Mataram", "Maumere", "Medan", "Padang", "Padang Sidempuan", "Palangkaraya", "Palembang", "Palopo", "Palu", "Pangkal Pinang", "Pariaman", "Pekanbaru", "Pematang Siantar", "Pontianak", "Praya", "Probolinggo", "Purwokerto", "Ruteng", "Sabang", "Salatiga", "Samarinda", "Semarang", "Serang", "Sibolga", "Singkawang", "Solo", "Sorong", "Sungai Penuh", "Surabaya", "Tanjung Balai", "Tanjung Pandan", "Tanjung Pinang", "Tanjung Selor", "Tarakan", "Tebing Tinggi", "Ternate", "Tomohon", "Waingapu", "Yogyakarta"};
+                                    for(String cityOption : cities) {
+                                %>
+                                    <option value="<%= cityOption %>"><%= cityOption %></option>
+                                <% } %>
+                                </select>
+                                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                            </form>
+                        <%
+                            } else {
+                        %>
+                            <p class="form-control-plaintext" id="city"><%= city %></p>
+                        <%
+                            }
+                        %>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label for="postCode">Post Code</label>
+                        <%
+                            String postCode = user.getPostCode();
+                            if (postCode == null || postCode.isEmpty()) {
+                        %>
+                            <form method="post" action="UpdateServlet">
+                                <input type="text" name="postCode" class="form-control" placeholder="Enter your post code" required>
+                                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                            </form>
+                        <%
+                            } else {
+                        %>
+                            <p class="form-control-plaintext" id="postCode"><%= postCode %></p>
+                        <%
+                            }
+                        %>
+                    </div>
+                    
+                   <div class="info-group">
+                      <label for="password">Password</label>
+                      <div class="input-group">
+                          <input type="password" class="form-control" id="password" value="<%= user.getPassword() %>">
+                          <div class="input-group-append">
+                              <span class="input-group-text" id="togglePassword">
+                                  <i class="fas fa-eye"></i>
+                              </span>
+                          </div>
+                      </div>
+                  </div>
+                      
+                    <div class="btn-group-custom">
                         <a href="update.jsp" class="btn btn-primary">Update</a>
                         <button type="button" class="btn btn-custom-red" onclick="confirmLogout()">Logout</button>
                         <button type="button" class="btn btn-custom-red" onclick="confirmDelete()">Delete Account</button>
@@ -100,7 +181,8 @@
         </div>
     </div>
 </div>
- <!-- Modal Logout -->
+
+<!-- Modal Logout -->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -121,7 +203,7 @@
     </div>
 </div>
                     
-                    <!-- Modal Delete Account -->
+<!-- Modal Delete Account -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -142,23 +224,38 @@
     </div>
 </div>
 
-                    
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-   function confirmLogout() {
+    function confirmLogout() {
         $('#logoutModal').modal('show');
     }
 
     function confirmDelete() {
         $('#deleteModal').modal('show');
     }
-     function viewHistory() {
-        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+
+    function viewHistory() {
+        if (confirm("Are you sure you want to view your history?")) {
             window.location.href = "TranshistoryServlet";
         }
     }
+
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        var passwordField = document.getElementById('password');
+        var passwordFieldType = passwordField.getAttribute('type');
+        var icon = this.querySelector('i');
+        if (passwordFieldType === 'password') {
+            passwordField.setAttribute('type', 'text');
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.setAttribute('type', 'password');
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
 </script>
 </body>
 </html>

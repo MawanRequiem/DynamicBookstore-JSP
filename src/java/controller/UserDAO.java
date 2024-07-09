@@ -2,8 +2,8 @@ package controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import db.db;
 import model.registerBeans;
 import model.userBeans;
@@ -50,7 +50,7 @@ public class UserDAO {
         }
     }
 
-    // Other methods remain unchanged
+    // Method to get user by username
     public userBeans getUserByUsername(String username) {
         String sql = "SELECT * FROM user_db WHERE username = ?";
         try (Connection conn = new db().getConnection();
@@ -63,6 +63,9 @@ public class UserDAO {
                 user.setUsername(rs.getString("username"));
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
+                user.setAddress(rs.getString("address"));
+                user.setCity(rs.getString("city"));
+                user.setPostCode(rs.getString("postal_code"));
                 return user;
             }
         } catch (SQLException e) {
@@ -74,14 +77,66 @@ public class UserDAO {
         return null;
     }
 
+    // Method to update user details
     public boolean updateUser(userBeans user) {
-        String sql = "UPDATE user_db SET nama_user = ?, email = ?, password = ? WHERE username = ?";
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE user_db SET ");
+        boolean first = true;
+
+        if (user.getName() != null) {
+            sqlBuilder.append("nama_user = ?");
+            first = false;
+        }
+        if (user.getEmail() != null) {
+            if (!first) sqlBuilder.append(", ");
+            sqlBuilder.append("email = ?");
+            first = false;
+        }
+        if (user.getPassword() != null) {
+            if (!first) sqlBuilder.append(", ");
+            sqlBuilder.append("password = ?");
+            first = false;
+        }
+        if (user.getAddress() != null) {
+            if (!first) sqlBuilder.append(", ");
+            sqlBuilder.append("address = ?");
+            first = false;
+        }
+        if (user.getCity() != null) {
+            if (!first) sqlBuilder.append(", ");
+            sqlBuilder.append("city = ?");
+            first = false;
+        }
+        if (user.getPostCode() != null) {
+            if (!first) sqlBuilder.append(", ");
+            sqlBuilder.append("postal_code = ?");
+        }
+
+        sqlBuilder.append(" WHERE username = ?");
+
         try (Connection conn = new db().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword());
-            ps.setString(4, user.getUsername());
+             PreparedStatement ps = conn.prepareStatement(sqlBuilder.toString())) {
+            int index = 1;
+
+            if (user.getName() != null) {
+                ps.setString(index++, user.getName());
+            }
+            if (user.getEmail() != null) {
+                ps.setString(index++, user.getEmail());
+            }
+            if (user.getPassword() != null) {
+                ps.setString(index++, user.getPassword());
+            }
+            if (user.getAddress() != null) {
+                ps.setString(index++, user.getAddress());
+            }
+            if (user.getCity() != null) {
+                ps.setString(index++, user.getCity());
+            }
+            if (user.getPostCode() != null) {
+                ps.setString(index++, user.getPostCode());
+            }
+            ps.setString(index, user.getUsername());
+
             int result = ps.executeUpdate();
             return result > 0;
         } catch (SQLException e) {
@@ -93,6 +148,7 @@ public class UserDAO {
         }
     }
 
+    // Method to delete user by username
     public boolean deleteUser(String username) {
         String sql = "DELETE FROM user_db WHERE username = ?";
         try (Connection conn = new db().getConnection();
