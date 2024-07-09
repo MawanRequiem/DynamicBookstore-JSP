@@ -23,16 +23,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="css/style.css">
           <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <style>
-        .book-detail img{
+     <style>
+       @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+            /* Menghilangkan margin dan padding pada body dan html */
+            body, html {
+                font-family: Zen Mathu Ghotic;
+                margin: 0;
+                padding: 0;
+                background-color: #FFFFEF;
+            }
+        .book-detail img {
             width: 140px;
         }
-        #modal-img{
+        #modal-img {
             width: 180px;
         }
+        .out-of-stock {
+            background-color: #ccc;
+            pointer-events: none;
+            cursor: not-allowed;
+            position: relative;
+        }
+        .out-of-stock::after {
+            content: "Out of Stock";
+            color: red;
+            font-size: 70px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
-    <script src="jQuery 3.7.1.js"></script>
-    <title>Tere Liye Bookstore</title>
+    <title>Seri Dunia Pararel</title>
 </head>
 <body>
   <%@ include file="header.jsp" %>
@@ -49,18 +72,18 @@ Meski novel ini bertemakan fantasi, Tere Liye selaku penulis pun tak lupa untuk 
               <div class="book-details-container">
             <% for (bookBeans book : books) { 
                 if (book.getSerial().equals("duniaParalel")) { %>
-                <a class="book-detail" href="#" onclick="openModal(event, '<%= book.getId() %>', '<%= book.getNama() %>', ' <%= book.getHarga() %>', '<%= book.getGenre() %>', '<%= book.getDeskripsi() %>', 'imageServlet?id=<%= book.getId() %>', 'book-page/<%= book.getId() %>.html')">
+               <a class="book-detail <%= book.getStock() <= 0 ? "out-of-stock" : "" %>" href="#" onclick="openModal(event, '<%= book.getId() %>', '<%= book.getNama() %>', '<%= book.getHarga() %>', '<%= book.getGenre() %>', '<%= book.getDeskripsi() %>', 'imageServlet?id=<%= book.getId() %>', '<%= book.getStock() %>')">
                     <img src="imageServlet?id=<%= book.getId() %>" alt="<%= book.getNama() %>">
                     <div class="book-info">
                         <h3><%= book.getNama() %></h3>
-                        <p><%= book.getGenre() %></p>
+                        <p>Genre: <%= book.getGenre() %></p>
                         <p><%= book.getDeskripsi() %></p>
+                        <p>Stock: <%= book.getStock() %> items</p>
                     </div>
                 </a>
             <% } } %>
         </div>
-</section>
-
+    </section>
 <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -70,16 +93,15 @@ Meski novel ini bertemakan fantasi, Tere Liye selaku penulis pun tak lupa untuk 
             <p id="modal-price">Price</p>
             <p id="modal-genre">Genre</p>
             <p id="modal-synopsis">Synopsis</p>
+            <p id="modal-stock">Stock buku: </p>
             <form id="modal-form" action="<%=request.getContextPath()%>/AddToCartServlet" method="post">
                 <input type="hidden" id="modal-book-id" name="bookId">
                 <input type="hidden" id="modal-book-name" name="bookName">
                 <input type="hidden" id="modal-book-price" name="bookPrice">
-                <button type="submit">Add to Cart</button>
+                <button type="submit" id="modal-add-to-cart">Add to Cart</button>
             </form>
         </div>
     </div>
-    </section>
-
 
     <!-- JavaScript -->
     <script>
@@ -91,8 +113,10 @@ Meski novel ini bertemakan fantasi, Tere Liye selaku penulis pun tak lupa untuk 
             }
         });
 
-        function openModal(event, id, title, price, genre, synopsis, imgSrc) {
+        function openModal(event, id, title, price, genre, synopsis, imgSrc, stock) {
             event.preventDefault();
+            if (stock <= 0) return; // Prevent modal for out of stock books
+
             const modal = document.getElementById('modal');
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-price').innerText = 'Rp ' + price;
@@ -102,6 +126,12 @@ Meski novel ini bertemakan fantasi, Tere Liye selaku penulis pun tak lupa untuk 
             document.getElementById('modal-book-id').value = id;
             document.getElementById('modal-book-name').value = title;
             document.getElementById('modal-book-price').value = price;
+            document.getElementById('modal-stock').innerText = 'Stock buku: ' + stock + ' item';
+            if (stock > 0) {
+                document.getElementById('modal-add-to-cart').disabled = false;
+            } else {
+                document.getElementById('modal-add-to-cart').disabled = true;
+            }
             modal.style.display = "block";
         }
 
@@ -116,8 +146,8 @@ Meski novel ini bertemakan fantasi, Tere Liye selaku penulis pun tak lupa untuk 
             }
         }
     </script>
-    
-  <%@ include file="footer.jsp" %>
+
+    <%@ include file="footer.jsp" %>
     <script type="text/javascript" src="javascript/script.js"></script>
 </body>
 </html>

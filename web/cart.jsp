@@ -23,7 +23,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
         html, body {
-            font-family: 'Zen Maru Gothic', sans-serif;
+            font-family:Zen Maru Gothic;
         }
         .container {
             margin-top: 50px;
@@ -115,13 +115,9 @@
         }
         .btn-remove {
             display: none;
-            background-color: white;
-            color: black;
-            border: 1px solid black;
-        }
-        .btn-remove:hover {
             background-color: red;
             color: white;
+            border: 1px solid black;
             cursor: pointer;
         }
         .modal-dialog {
@@ -134,6 +130,33 @@
         .modal-footer .btn {
             min-width: 100px;
         }
+        .btn-danger {
+        color: #fff;
+        background-color: red;
+        border-color: red;
+        }  
+        .btn-success {
+        color: #fff;
+        background-color: green;
+        border-color: green;
+        }
+        
+        .modal-content {
+    padding: 20px;
+}
+.modal-footer .btn {
+    min-width: 100px;
+}
+.btn-danger {
+    color: #fff;
+    background-color: red;
+    border-color: red;
+}
+.btn-light {
+    color: #000;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
     </style>
 </head>
 <body>
@@ -224,139 +247,195 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal Konfirmasi Hapus Item -->
+<div class="modal fade" id="confirmRemoveItemModal" tabindex="-1" role="dialog" aria-labelledby="confirmRemoveItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmRemoveItemModalLabel">Konfirmasi Hapus Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus item ini dari keranjang belanja?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Tidak</button>
+                <button type="button" class="btn btn-danger" id="confirmRemoveButton">Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        let totalHarga = 0;
+<!-- Modal Konfirmasi Kurangi Barang -->
+<div class="modal fade" id="confirmReduceItemModal" tabindex="-1" role="dialog" aria-labelledby="confirmReduceItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmReduceItemModalLabel">Konfirmasi Kurangi Barang</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Anda hanya memiliki satu item. Apakah Anda yakin ingin menghapus item ini dari keranjang belanja?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Tidak</button>
+                <button type="button" class="btn btn-danger" id="confirmReduceButton">Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        function updateTotal() {
-            totalHarga = 0;
-            let isAnyCheckboxChecked = false;
+<script>
+let totalHarga = 0;
+let itemToRemoveId = null;
+let itemToReduceId = null;
 
-            document.querySelectorAll('.book-checkbox:checked').forEach(checkbox => {
-                const price = parseFloat(checkbox.getAttribute('data-price'));
-                const quantity = parseInt(checkbox.getAttribute('data-quantity'));
-                totalHarga += price * quantity;
-                isAnyCheckboxChecked = true;
-            });
+function updateTotal() {
+    totalHarga = 0;
+    let isAnyCheckboxChecked = false;
 
-            document.getElementById('total-price').innerText = totalHarga.toLocaleString('id-ID');
-            document.getElementById('remove-selected').style.display = isAnyCheckboxChecked ? 'inline-block' : 'none';
-        }
+    document.querySelectorAll('.book-checkbox:checked').forEach(checkbox => {
+        const price = parseFloat(checkbox.getAttribute('data-price'));
+        const quantity = parseInt(checkbox.getAttribute('data-quantity'));
+        totalHarga += price * quantity;
+        isAnyCheckboxChecked = true;
+    });
 
-        function changeQuantity(button, change, bookId, maxStock) {
-            const quantitySpan = button.parentNode.querySelector('.quantity');
-            let quantity = parseInt(quantitySpan.innerText);
-            const checkbox = button.parentNode.parentNode.querySelector('.book-checkbox');
+    document.getElementById('total-price').innerText = totalHarga.toLocaleString('id-ID');
+    document.getElementById('remove-selected').style.display = isAnyCheckboxChecked ? 'inline-block' : 'none';
+}
 
-            quantity += change;
+function changeQuantity(button, change, bookId, maxStock) {
+    const quantitySpan = button.parentNode.querySelector('.quantity');
+    let quantity = parseInt(quantitySpan.innerText);
+    const checkbox = button.parentNode.parentNode.querySelector('.book-checkbox');
 
-            if (quantity > maxStock) {
-                showModal('Kuantitas melebihi stock yang ada.');
-                return;
-            }
+    quantity += change;
 
-            if (quantity <= 0) {
-                if (confirm('Apakah yakin untuk menghapus barang dari cart?')) {
-                    const card = document.getElementById('cart-item-' + bookId);
-                    card.parentNode.removeChild(card);
-                    removeFromCart(bookId);
-                } else {
-                    quantity = 1;
-                }
-            }
+    if (quantity > maxStock) {
+        showModal('Kuantitas melebihi stock yang ada.');
+        return;
+    }
 
-            quantitySpan.innerText = quantity;
-            checkbox.setAttribute('data-quantity', quantity);
-            updateCartItem(bookId, quantity);
+    if (quantity <= 0) {
+        itemToRemoveId = bookId;
+        $('#confirmRemoveItemModal').modal('show');
+        return;
+    }
+
+    if (quantity === 1 && change < 0) {
+        itemToReduceId = bookId;
+        $('#confirmReduceItemModal').modal('show');
+        return;
+    }
+
+    quantitySpan.innerText = quantity;
+    checkbox.setAttribute('data-quantity', quantity);
+    updateCartItem(bookId, quantity);
+    updateTotal();
+}
+
+function showModal(message) {
+    const modalContent = document.getElementById('modalContent');
+    modalContent.innerText = message;
+    $('#alertModal').modal('show');
+}
+
+function removeFromCart(cartId) {
+    fetch('RemoveFromCartServlet?cartId=' + cartId, {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
             updateTotal();
+        } else {
+            alert('Gagal menghapus barang dari cart.');
         }
+    })
+    .catch(error => {
+        console.error('Error removing from cart:', error);
+        alert('Terjadi kesalahan saat menghapus barang dari cart.');
+    });
+}
 
-        function showModal(message) {
-            const modalContent = document.getElementById('modalContent');
-            modalContent.innerText = message;
-            $('#alertModal').modal('show');
+function updateCartItem(cartId, quantity) {
+    fetch('UpdateCartServlet?cartId=' + cartId + '&quantity=' + quantity, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
-
-        function confirmRemove(bookId) {
-            if (confirm('Apakah yakin untuk menghapus barang dari cart?')) {
-                const card = document.getElementById('cart-item-' + bookId);
-                card.parentNode.removeChild(card);
-                removeFromCart(bookId);
-            }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Berhasil memperbarui jumlah barang di keranjang.');
+        } else {
+            alert('Gagal memperbarui jumlah barang di keranjang.');
         }
+    })
+    .catch(error => {
+        console.error('Error updating cart item:', error);
+        alert('Terjadi kesalahan saat memperbarui jumlah barang di keranjang.');
+    });
+}
 
-        function removeFromCart(cartId) {
-            fetch('RemoveFromCartServlet?cartId=' + cartId, {
-                method: 'POST'
-            })
-            .then(response => {
-                if (response.ok) {
-                    updateTotal();
-                } else {
-                    alert('Gagal menghapus barang dari cart.');
-                }
-            })
-            .catch(error => {
-                console.error('Error removing from cart:', error);
-                alert('Terjadi kesalahan saat menghapus barang dari cart.');
-            });
-        }
+function validateCheckout() {
+    if (document.querySelectorAll('.book-checkbox:checked').length === 0) {
+        alert('Pilih setidaknya satu item untuk melanjutkan.');
+        return false;
+    }
+    return true;
+}
 
-        function updateCartItem(cartId, quantity) {
-            fetch('UpdateCartServlet?cartId=' + cartId + '&quantity=' + quantity, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Berhasil memperbarui jumlah barang di keranjang.');
-                } else {
-                    alert('Gagal memperbarui jumlah barang di keranjang.');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating cart item:', error);
-                alert('Terjadi kesalahan saat memperbarui jumlah barang di keranjang.');
-            });
-        }
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const itemCheckboxes = document.querySelectorAll('.book-checkbox');
 
-        function validateCheckout() {
-            if (document.querySelectorAll('.book-checkbox:checked').length === 0) {
-                alert('Pilih setidaknya satu item untuk melanjutkan.');
-                return false;
-            }
-            return true;
-        }
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
 
-        function toggleSelectAll() {
-            const selectAllCheckbox = document.getElementById('select-all');
-            const itemCheckboxes = document.querySelectorAll('.book-checkbox');
+    updateTotal();
+}
 
-            itemCheckboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
+function showRemoveAllModal() {
+    $('#removeAllModal').modal('show');
+}
 
-            updateTotal();
-        }
+function removeSelectedItems() {
+    const selectedItems = document.querySelectorAll('.book-checkbox:checked');
+    selectedItems.forEach(item => {
+        const cartItem = document.getElementById('cart-item-' + item.value);
+        cartItem.parentNode.removeChild(cartItem);
+    });
+    $('#removeAllModal').modal('hide');
+    updateTotal();
+}
 
-        function showRemoveAllModal() {
-            $('#removeAllModal').modal('show');
-        }
+// Konfirmasi hapus item
+document.getElementById('confirmRemoveButton').addEventListener('click', () => {
+    $('#confirmRemoveItemModal').modal('hide');
+    const card = document.getElementById('cart-item-' + itemToRemoveId);
+    card.parentNode.removeChild(card);
+    removeFromCart(itemToRemoveId);
+    itemToRemoveId = null;  // Reset variabel setelah konfirmasi
+});
 
-        function removeSelectedItems() {
-            const selectedItems = document.querySelectorAll('.book-checkbox:checked');
-            selectedItems.forEach(item => {
-                const cartItem = document.getElementById('cart-item-' + item.value);
-                cartItem.parentNode.removeChild(cartItem);
-            });
-            $('#removeAllModal').modal('hide');
-            updateTotal();
-        }
+// Konfirmasi hapus item jika jumlah 1
+document.getElementById('confirmReduceButton').addEventListener('click', () => {
+    $('#confirmReduceItemModal').modal('hide');
+    const card = document.getElementById('cart-item-' + itemToReduceId);
+    card.parentNode.removeChild(card);
+    removeFromCart(itemToReduceId);
+    itemToReduceId = null;  // Reset variabel setelah konfirmasi
+});
 
-        document.addEventListener('DOMContentLoaded', updateTotal);
-    </script>
+document.addEventListener('DOMContentLoaded', updateTotal);
+</script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

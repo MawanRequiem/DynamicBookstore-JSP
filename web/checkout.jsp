@@ -35,45 +35,67 @@
     }
 %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
-        html, body {
-            font-family: 'Zen Maru Gothic', sans-serif;
+       @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+            /* Menghilangkan margin dan padding pada body dan html */
+            body, html {
+                font-family: Zen Maru Ghotic;
+            background-color: #FFFFEF;
         }
         .container {
             margin-top: 50px;
+            background-color: #FFFFEF;
         }
         .checkout-container {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 20px;
         }
-        .order-summary {
-            width: 40%;
+        .order-summary-card {
             padding: 20px;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            margin-right: 20px;
+        }
+        .order-summary-card img {
+            width: 80px;
+            height: auto;
+        }
+        .checkout-form-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .cancel-button {
+            margin-bottom: 20px;
+        }
+        .btn-danger {
+            color: #fff;
+            background-color: red;
+            border-color: red;
         }
         .total-price {
             font-size: 18px;
             font-weight: bold;
             margin-top: 20px;
         }
-        .checkout-form {
-            width: 55%;
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
         }
-        .cancel-button {
-            margin-bottom: 20px;
-        }
-        .img-thumbnail {
-            width: 100px;
-            height: auto;
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
         }
     </style>
 </head>
@@ -104,30 +126,31 @@
 %>
     
     <div class="checkout-container">
-        <div class="order-summary">
+        <!-- Card for Order Summary -->
+        <div class="order-summary-card">
             <h3>Order Summary</h3>
-            <ul>
-                <% for (cartBeans item : selectedItems) { %>
-                    <li>
-                        <img src="data:image/png;base64,<%= item.getImageBase64() %>" alt="<%= item.getBookName() %>" class="img-thumbnail">
-                        <%= item.getBookName() %> - <%= item.getQuantity() %> x Rp <%= item.getBookPrice() %>
-                    </li>
-                <% } %>
-            </ul>
+            <% for (cartBeans item : selectedItems) { %>
+                <div class="d-flex align-items-center mb-2">
+                    <img src="data:image/png;base64,<%= item.getImageBase64() %>" alt="<%= item.getBookName() %>" class="img-thumbnail mr-2">
+                    <div>
+                        <div><%= item.getBookName() %> - <%= item.getQuantity() %> x Rp <%= item.getBookPrice() %></div>
+                    </div>
+                </div>
+            <% } %>
             <div class="total-price">
                 Total: Rp <%= String.format("%,.2f", totalPrice) %>
             </div>
         </div>
 
-        <div class="checkout-form">
+        <!-- Card for Checkout Form -->
+        <div class="checkout-form-card">
             <form id="checkout-form" action="CheckoutServlet" method="POST">
                 
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" value="<%= user.getUsername() %>" required readonly>
-            </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="<%= user.getUsername() %>" required readonly>
+                </div>
 
-                
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" class="form-control" id="name" name="name" value="<%= user.getName() %>" required>
@@ -177,7 +200,5 @@
         </div>
     </div>
 </div>
-              
 </body>
-
 </html>

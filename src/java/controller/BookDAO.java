@@ -1,3 +1,4 @@
+// controller/BookDAO.java
 package controller;
 
 import model.bookBeans;
@@ -88,21 +89,21 @@ public class BookDAO {
         book.setStock(rs.getInt("stock_buku"));
         return book;
     }
-    
+
     public List<bookBeans> searchBooksStartingWith(String query) {
-    List<bookBeans> books = new ArrayList<>();
-    String sql = "SELECT * FROM buku WHERE nama_buku LIKE ?";
-    try (Connection connection = new db().getConnection();
-         PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setString(1, query + "%");
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                books.add(extractBookFromResultSet(rs));
+        List<bookBeans> books = new ArrayList<>();
+        String sql = "SELECT * FROM buku WHERE nama_buku LIKE ?";
+        try (Connection connection = new db().getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, query + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    books.add(extractBookFromResultSet(rs));
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return books;
     }
-    return books;
-}
 }

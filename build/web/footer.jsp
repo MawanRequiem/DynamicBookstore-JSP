@@ -10,13 +10,6 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
-         <style>
-        footer {
-            background-color: #FF7D29; /* Warna latar belakang footer */
-            color: white; /* Warna teks footer */
-            padding: 20px 0; /* Padding atas dan bawah footer */
-        }
-    </style>
     </head>
     <body>
   <footer>

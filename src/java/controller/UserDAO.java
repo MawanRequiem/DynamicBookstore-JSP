@@ -9,6 +9,7 @@ import model.registerBeans;
 import model.userBeans;
 
 public class UserDAO {
+
     // Method to check if the email is already in use
     public boolean isEmailUsed(String email) {
         String sql = "SELECT 1 FROM user_db WHERE email = ?";

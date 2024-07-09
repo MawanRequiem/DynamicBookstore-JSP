@@ -10,11 +10,17 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
+       @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+            /* Menghilangkan margin dan padding pada body dan html */
+            body, html {
+                font-family: Zen Maru Gothic;
+                margin: 0;
+                padding: 0;
+                background-color: #FFFFEF;
+            }
         .card {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #FFFFEF;
         }
         .btn-custom-red {
             background-color: red;
@@ -112,23 +118,84 @@
     </div>
 </div>
 
+<!-- Modal Notifikasi Berhasil Update -->
+<div class="modal fade" id="updateSuccessModal" tabindex="-1" role="dialog" aria-labelledby="updateSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateSuccessModalLabel">Update Berhasil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Anda berhasil memperbarui data Anda.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Notifikasi Tidak Ada Perubahan -->
+<div class="modal fade" id="noChangesModal" tabindex="-1" role="dialog" aria-labelledby="noChangesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noChangesModalLabel">Tidak Ada Perubahan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Anda tidak mengganti data akun Anda.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='detail.jsp'">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        var passwordField = document.getElementById('password');
-        var passwordFieldType = passwordField.getAttribute('type');
-        var icon = this.querySelector('i');
-        if (passwordFieldType === 'password') {
-            passwordField.setAttribute('type', 'text');
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.setAttribute('type', 'password');
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const updateSuccess = urlParams.get('updateSuccess');
+        const noChanges = urlParams.get('noChanges');
+        
+        
+        if (noChanges === 'true') {
+            $('#noChangesModal').modal('show');
         }
+
+        if (updateSuccess === 'true') {
+            $('#updateSuccessModal').modal('show');
+            $('#updateSuccessModal').on('hidden.bs.modal', function () {
+                window.location.href = 'index.jsp'; // Arahkan ke index.jsp setelah modal ditutup
+            });
+        } else if (updateSuccess === 'false') {
+            alert('Gagal memperbarui data. Silakan coba lagi.');
+        } else if (noChanges === 'true') {
+            $('#noChangesModal').modal('show');
+        }
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            var passwordField = document.getElementById('password');
+            var passwordFieldType = passwordField.getAttribute('type');
+            var icon = this.querySelector('i');
+            if (passwordFieldType === 'password') {
+                passwordField.setAttribute('type', 'text');
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.setAttribute('type', 'password');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
     });
 </script>
 </body>

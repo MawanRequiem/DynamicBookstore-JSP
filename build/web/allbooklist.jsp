@@ -24,11 +24,6 @@
  
         
     <style>
-         @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
-         html, body {
-             font-family: 'Zen Maru Gothic', sans-serif;
-                background-color: #FFFFEF;
-         }
         .book-item img{
             width: 180px;
         }
@@ -53,28 +48,6 @@
                 <div class="book-list">
                     <% for (bookBeans book : books) { 
                         if (book.getGenre().equals("Action")) { %>
-                        <a href="#" class="book-item" onclick="openModal(event, '<%= book.getId() %>', '<%= book.getNama() %>', '<%= book.getHarga() %>', '<%= book.getGenre() %>', '<%= book.getDeskripsi() %>', 'imageServlet?id=<%= book.getId() %>')">
-                            <img src="imageServlet?id=<%= book.getId() %>" alt="<%= book.getNama() %>">
-                            <h2><%= book.getNama() %></h2>
-                            <p>Rp <%= book.getHarga() %></p>
-                            <p class="genre">Genre: <%= book.getGenre() %></p>
-                        </a>
-                    <% } } %>
-                </div>
-            </div>
-            <button class="carousel-button next" onclick="plusSlidesAllBook('carousel-action', 1)">›</button>
-        </div>
-                
-                
-                <h1 class="heading">
-            <span>Adventure</span>
-        </h1>
-        <div class="carousel-container" id="carousel-adventure">
-            <button class="carousel-button prev" onclick="plusSlidesAllBook('carousel-action', -1)">‹</button>
-            <div class="carousel-slide">
-                <div class="book-list">
-                    <% for (bookBeans book : books) { 
-                        if (book.getGenre().equals("Adventure")) { %>
                         <a href="#" class="book-item" onclick="openModal(event, '<%= book.getId() %>', '<%= book.getNama() %>', '<%= book.getHarga() %>', '<%= book.getGenre() %>', '<%= book.getDeskripsi() %>', 'imageServlet?id=<%= book.getId() %>')">
                             <img src="imageServlet?id=<%= book.getId() %>" alt="<%= book.getNama() %>">
                             <h2><%= book.getNama() %></h2>
@@ -113,8 +86,8 @@
         <h1 class="heading">
             <span>Family</span>
         </h1>
-         <div class="carousel-container" id="carousel-family">
-        <button class="carousel-button prev" onclick="plusSlidesAllBook('carousel-family', -1)">‹</button>
+         <div class="carousel-container" id="carousel-action">
+        <button class="carousel-button prev" onclick="plusSlidesAllBook('carousel-action', -1)">‹</button>
         <div class="carousel-slide">
             <div class="book-list">
                 <% for (bookBeans book : books) { 
@@ -128,14 +101,14 @@
                 <% } } %>
             </div>
         </div>
-        <button class="carousel-button next" onclick="plusSlidesAllBook('carousel-family', 1)">›</button>
+        <button class="carousel-button next" onclick="plusSlidesAllBook('carousel-action', 1)">›</button>
     </div>
 
         <h1 class="heading">
             <span>Fantasy</span>
         </h1>
-        <div class="carousel-container" id="carousel-fantasy">
-        <button class="carousel-button prev" onclick="plusSlidesAllBook('carousel-fantasy', -1)">‹</button>
+        <div class="carousel-container" id="carousel-action">
+        <button class="carousel-button prev" onclick="plusSlidesAllBook('carousel-action', -1)">‹</button>
         <div class="carousel-slide">
             <div class="book-list">
                 <% for (bookBeans book : books) { 
@@ -149,7 +122,7 @@
                 <% } } %>
             </div>
         </div>
-        <button class="carousel-button next" onclick="plusSlidesAllBook('carousel-fantasy', 1)">›</button>
+        <button class="carousel-button next" onclick="plusSlidesAllBook('carousel-action', 1)">›</button>
     </div>
             
             

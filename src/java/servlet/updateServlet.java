@@ -27,6 +27,9 @@ public class updateServlet extends HttpServlet {
             return;
         }
 
+        String newName = request.getParameter("name");
+        String newEmail = request.getParameter("email");
+        String newPassword = request.getParameter("password");
         String newAddress = request.getParameter("address");
         String newCity = request.getParameter("city");
         String newPostCode = request.getParameter("postCode");
@@ -35,24 +38,51 @@ public class updateServlet extends HttpServlet {
         userBeans user = userDAO.getUserByUsername(currentUsername);
 
         if (user != null) {
-            // Update only the non-null parameters
-            if (newAddress != null && !newAddress.trim().isEmpty()) {
+            // Check for changes
+            boolean hasChanges = false;
+
+            // Check if the new email is already in use
+            if (newEmail != null && !newEmail.equals(user.getEmail())) {
+                if (userDAO.isEmailUsed(newEmail)) {
+                    request.setAttribute("errorMessage", "Email sudah digunakan.");
+                    request.getRequestDispatcher("update.jsp").forward(request, response);
+                    return;
+                }
+                user.setEmail(newEmail);
+                hasChanges = true;
+            }
+            if (newName != null && !newName.equals(user.getName())) {
+                user.setName(newName);
+                hasChanges = true;
+            }
+            if (newPassword != null && !newPassword.isEmpty() && !newPassword.equals(user.getPassword())) {
+                user.setPassword(newPassword);
+                hasChanges = true;
+            }
+            if (newAddress != null && !newAddress.equals(user.getAddress())) {
                 user.setAddress(newAddress);
+                hasChanges = true;
             }
-            if (newCity != null && !newCity.trim().isEmpty()) {
+            if (newCity != null && !newCity.equals(user.getCity())) {
                 user.setCity(newCity);
+                hasChanges = true;
             }
-            if (newPostCode != null && !newPostCode.trim().isEmpty()) {
+            if (newPostCode != null && !newPostCode.equals(user.getPostCode())) {
                 user.setPostCode(newPostCode);
+                hasChanges = true;
             }
 
-            boolean success = userDAO.updateUser(user);
+            if (hasChanges) {
+                boolean success = userDAO.updateUser(user);
 
-            if (success) {
-                session.setAttribute("uName", user.getUsername());
-                response.sendRedirect("detail.jsp");
+                if (success) {
+                    session.setAttribute("uName", user.getUsername());
+                    response.sendRedirect("update.jsp?updateSuccess=true");
+                } else {
+                    response.sendRedirect("update.jsp?updateSuccess=false");
+                }
             } else {
-                response.sendRedirect("AccountDetails.jsp?error=true");
+                response.sendRedirect("update.jsp?noChanges=true");
             }
         } else {
             response.sendRedirect("login.jsp");

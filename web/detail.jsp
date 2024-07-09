@@ -10,11 +10,17 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+            /* Menghilangkan margin dan padding pada body dan html */
+            body, html {
+                font-family: Zen Maru Ghotic;
+                margin: 0;
+                padding: 0;
+                background-color: #FFFFEF;
+            }
         .card {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #FFFFEF;
         }
         .btn-custom-red {
             background-color: red;
@@ -33,6 +39,8 @@
         .btn-group-custom {
             display: flex;
             justify-content: space-between;
+            width: 100%;
+            font-weight: bold;
         }
         .btn-group-custom .btn {
             flex: 1;
@@ -224,6 +232,27 @@
     </div>
 </div>
 
+<!-- Modal Konfirmasi Lihat Riwayat -->
+<div class="modal fade" id="viewHistoryModal" tabindex="-1" role="dialog" aria-labelledby="viewHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewHistoryModalLabel">Konfirmasi Melihat Riwayat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to see your transaction history?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmViewHistoryButton">See History</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -236,12 +265,13 @@
         $('#deleteModal').modal('show');
     }
 
-    function viewHistory() {
-        if (confirm("Are you sure you want to view your history?")) {
-            window.location.href = "TranshistoryServlet";
-        }
-    }
+ function viewHistory() {
+    $('#viewHistoryModal').modal('show');
+}
 
+document.getElementById('confirmViewHistoryButton').addEventListener('click', () => {
+    window.location.href = "TranshistoryServlet";
+});
     document.getElementById('togglePassword').addEventListener('click', function () {
         var passwordField = document.getElementById('password');
         var passwordFieldType = passwordField.getAttribute('type');

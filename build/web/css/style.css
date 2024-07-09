@@ -1,12 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+/* General Styling */
 body {
   margin: 0;
-  font-family: Zen Mathu Ghotic;
-
+  font-family: 'Montserrat';
 }
+
 section {
   padding: 3rem 9%;
-  background-color: #FFFFEF;
 }
 
 a{
@@ -62,7 +61,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  background-color:#FF7D29;
+  background-color: rgb(144, 220, 255);
 }
 
 .logo {
@@ -130,10 +129,9 @@ header {
 }
 
 .navbar a {
-  font-weight: 750;
   padding: 14px 20px;
   display: block;
-  color: white;
+  color: black;
   text-align: center;
   text-decoration: none;
 }
@@ -244,9 +242,9 @@ header {
   align-items: center;
   gap: 1rem;
   padding: 3rem;
-  border: 1px solid white;
+  border: 1px solid #d9d9d9;
   border-radius: 10px;
-  background-color: #FFFFEF;
+  background-color: #f4f4f4;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, background-color 0.3s;
 }
@@ -430,7 +428,7 @@ header {
   margin-bottom: 5%;
   padding: 3%;
   overflow: hidden;
-  background-color: #FFFFEF;
+  background-color: #f0f0f0;
   border-radius: 10px;
 }
 
@@ -770,7 +768,6 @@ footer {
 /* Book Details Series Styling */
 /* Book Details Styling */
 .book-details-container {
-  background-color: #FFFFEF;
   display: flex;
   flex-direction: column;
   align-items: center; /* Center the boxes horizontally */
@@ -781,7 +778,7 @@ footer {
 
 .book-detail {
   display: flex;
-  background-color: #FFFFEF;
+  background-color: #f4f4f4;
   padding: 3rem;
   border: 1px solid #ddd;
   border-radius: 10px;

@@ -1,13 +1,13 @@
-<%@ page import="controller.BookDAO, model.bookBeans, java.sql.Connection, java.util.List" %>
-<%@ page import="javax.servlet.http.HttpSession" %>
-<%@ page import="db.db" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>JSP Page</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+        html, body {
+            font-family: Zen Maru Gothic;
+        }
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -89,6 +89,19 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .author-link {
+            display: block; /* Pastikan elemen tersebut dapat menampung padding/margin */
+            text-decoration: none; /* Hapus garis bawah dari hyperlink */
+            color: inherit; /* Warna teks mengikuti warna dari elemen induk */
+            font-size: 24px; /* Ukuran font mirip dengan <h3> */
+            font-weight: bold; /* Tebal seperti <h3> */
+            cursor: pointer; /* Mengubah cursor menjadi pointer saat hover */
+            color: white;
+        }
+        .author-link:hover {
+            color: white; /* Warna teks saat hover, sesuaikan dengan desain */
+            text-decoration: none; /* Garis bawah saat hover */
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
@@ -105,49 +118,6 @@
             document.getElementById('modal-book-price').value = price;
             modal.style.display = "block";
         }
-        
-           function openModal(event, id, title, price, genre, synopsis, imgSrc) {
-        event.preventDefault();
-        const modal = document.getElementById('modal');
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-price').innerText = 'Rp ' + price;
-        document.getElementById('modal-genre').innerText = genre;
-        document.getElementById('modal-synopsis').innerText = synopsis;
-        document.getElementById('modal-img').src = imgSrc;
-        document.getElementById('modal-book-id').value = id;
-        document.getElementById('modal-book-name').value = title;
-        document.getElementById('modal-book-price').value = price;
-        modal.style.display = "block";
-    }
-
-    function closeModal() {
-        document.getElementById('modal').style.display = "none";
-    }
-
-    function getSearchSuggestions(query) {
-        if (query.length === 0) {
-            document.getElementById('suggestionsContainer').innerHTML = '';
-            return;
-        }
-
-        $.ajax({
-            url: 'searchServlet',
-            method: 'GET',
-            data: { query: query, action: 'suggest' },
-            success: function(response) {
-                $('#suggestionsContainer').html(response);
-            },
-            error: function() {
-                $('#suggestionsContainer').html('<p>Error retrieving suggestions.</p>');
-            }
-        });
-    }
-
-    function selectSuggestion(value) {
-        document.getElementById('search-input').value = value;
-        document.getElementById('suggestionsContainer').innerHTML = '';
-        document.getElementById('searchForm').submit();
-    }
 
         function closeModal() {
             document.getElementById('modal').style.display = "none";
@@ -186,7 +156,7 @@
     %>
     <header>
         <div class="top-bar">
-            <h3>Tere Liye</h3>
+            <a href="index.jsp" class="author-link">Tere Liye</a>
             <div class="navbar">
                 <nav>
                     <form id="searchForm" action="searchServlet" method="GET" class="search-container" onsubmit="performSearch(event)">

@@ -8,13 +8,14 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
-        html, body {
-            height: 100%;
-            margin: 0;
-            font-family: 'Zen Maru Gothic', sans-serif;
-            background: url('image/gambar-register.png') no-repeat center center fixed;
-            background-size: cover;
+        html, body * {
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif
+        }
+
+        body {
+            background: rgb(144, 220, 255);
+            font-family: 'Raleway', sans-serif;
         }
 
         .container {
@@ -25,11 +26,12 @@
         }
 
         .frame {
-            height: 685px;
-            width: 400px;
-            background: rgba(255, 255, 229, 0.8);
+            height: 700px;
+            width: 500px;
+            background: white;
             background-size: cover;
             padding: 20px;
+            text-align: center;
             margin-left: auto;
             margin-right: auto;
             border-top: solid 1px rgba(255, 255, 255, .5);
@@ -40,6 +42,16 @@
             transition: all .5s ease;
         }
 
+        .frame-long {
+            height: 615px;
+        }
+
+        .frame-short {
+            height: 400px;
+            margin-top: 50px;
+            box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.1);
+        }
+
         .nav {
             width: 100%;
             height: 50px;
@@ -47,6 +59,11 @@
             text-align: center;
             opacity: 1;
             transition: all .5s ease;
+        }
+
+        .nav-up {
+            transform: translateY(-100px);
+            opacity: 0;
         }
 
         .nav ul {
@@ -70,42 +87,63 @@
             color: #007BFF;
         }
 
-        .form-signin {
-            width: 100%;
+        li {
+            padding-left: 10px;
+            font-size: 18px;
+            display: inline;
             text-align: left;
-            margin-top: 20px;
-            height: 375px;
-            font-size: 16px;
-            font-weight: 300;
-            padding-left: 37px;
-            padding-right: 37px;
-            padding-top: 55px;
-            transition: opacity .5s ease, transform .5s ease;
-            background: transparent;
+            text-transform: uppercase;
+            padding-right: 10px;
+            color: #ffffff;
         }
 
-        .form-styling {
-            width: 100%;
-            height: 35px;
-            padding: 10px;
-            padding-left: 15px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, .2);
-            color: black;
-        }
-
-        label {
+        .signin-active a {
+            text-align: center;
+            padding-bottom: 10px;
             font-weight: bold;
-            font-size: 13px;
-            padding-left: 15px;
-            color: #EB6611;
-            display: block;
+            color: #007BFF;
+            text-decoration: none;
+            border-bottom: solid 2px #1059FF;
+            transition: all .25s ease;
+            cursor: pointer;
         }
 
-        .btn-primary, .btn-cancel {
+        .signin-inactive a {
+            padding-bottom: 0;
+            color: rgba(255, 255, 255, .3);
+            text-decoration: none;
+            border-bottom: none;
+            cursor: pointer;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
+            color: #000;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            height: calc(2.25rem + 2px);
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        .btn-primary {
             font-weight: 700;
             text-transform: uppercase;
             font-size: 16px;
@@ -118,48 +156,36 @@
             border: none;
             border-radius: 4px;
             margin-top: 23px;
+            background: #007BFF;
             transition: background 0.3s ease;
         }
 
-        .btn-primary {
-            background: #EB6611;
-        }
-
         .btn-primary:hover {
-            background: #B64E00;
+            background: #0056b3;
         }
 
-        .btn-cancel {
-            background: #EB6611;
-            margin-top: 10px;
-        }
-
-        .btn-cancel:hover {
-            background: #B64E00;
+        .card-body {
+            width: 100%;
+            text-align: left;
+            margin-top: 20px;
+            height: 375px;
+            font-size: 16px;
+            font-weight: 300;
+            padding-left: 37px;
+            padding-right: 37px;
+            padding-top: 55px;
+            transition: opacity .5s ease, transform .5s ease;
         }
 
         .sign-up {
             text-align: center;
             margin-top: 10px;
-            color: black;
         }
 
         .sign-up a {
-            color: #EB6611;
+            color: #007BFF;
             text-decoration: none;
             font-weight: bold;
-        }
-
-        .form-styling:focus {
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .form-styling:not(:placeholder-shown) {
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .frame.active {
-            background: rgba(255, 255, 229, 1);
         }
     </style>
     <script>
@@ -181,59 +207,41 @@
                 $('#errorModal').modal('show');
             }
         };
-
-        $(document).ready(function() {
-            $('.form-styling').on('focus', function() {
-                $('.frame').addClass('active');
-            });
-
-            $('.form-styling').on('blur', function() {
-                if (!$(this).val()) {
-                    $('.frame').removeClass('active');
-                }
-            });
-
-            $('form').on('submit', function() {
-                $('.frame').addClass('active');
-            });
-        });
     </script>
 </head>
 <body>
 <div class="container">
     <div class="frame">
         <div class="nav">
-            <ul class="links text-center">
-                <li class="signin-active">
-                    <span style="color: #FF7D29; font-weight: bold; text-transform: uppercase; font-size: 18px;">Register</span>
-                </li>
+            <ul class="links" style="text-align: center;">
+                <li class="signin-active"><a class="btn" style="color: #000;">Register</a></li>
             </ul>
         </div>
         <div class="card-body">
             <form action="registerServlet" method="post" onsubmit="return validateForm();">
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" class="form-control form-styling" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name" required>
                 </div>
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" class="form-control form-styling" id="username" name="username" required>
+                    <input type="text" class="form-control" id="username" name="username" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control form-styling" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control form-styling" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" name="password" required>
                 </div>
                 <div class="form-group">
                     <label for="confirm-password">Confirm Password</label>
-                    <input type="password" class="form-control form-styling" id="confirm-password" name="confirmPassword" required>
+                    <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required>
                 </div>
                 <button type="submit" class="btn-primary">Register</button>
                 <button class="btn-primary" type="button" onclick="window.location.href='index.jsp';">Cancel</button>
-                <div class="sign-up">Sudah punya akun? <a href="login.jsp">Klik disini</a></div>
+                <div class="sign-up">Sudah punya akun? <a href="login.jsp">Klik di sini</a></div>
             </form>
         </div>
     </div>

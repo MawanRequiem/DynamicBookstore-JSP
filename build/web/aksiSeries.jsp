@@ -24,11 +24,8 @@
        <link rel="stylesheet" href="css/style.css">
            <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
-            .book-detail img{
-            width: 140px;
-        }
-        #modal-img{
-            width: 180px;
+        .book-detail img{
+            width: 150px;
         }
     </style>
     <script src="jQuery 3.7.1.js"></script>

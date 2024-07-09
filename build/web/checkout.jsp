@@ -1,183 +1,113 @@
-<%@ page import="model.userBeans"%>
-<%@ page import="controller.UserDAO"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="model.cartBeans"%>
-<%@ page import="java.util.List"%>
-<%@ page import="controller.CartDAO"%>
-<%@ page import="java.sql.Connection"%>
-<%@ page import="javax.servlet.http.HttpSession"%>
-
-<%
-    String username = (String) session.getAttribute("uName");
-    if (username == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-
-    String[] selectedItemsParam = request.getParameterValues("selectedItems");
-    if (selectedItemsParam == null || selectedItemsParam.length == 0) {
-        response.sendRedirect("cart.jsp");
-        return;
-    }
-
-    List<Integer> selectedItemIds = new ArrayList<>();
-    for (String itemId : selectedItemsParam) {
-        selectedItemIds.add(Integer.parseInt(itemId));
-    }
-
-    Connection connection = (Connection) getServletContext().getAttribute("DBConnection");
-    CartDAO cartDAO = new CartDAO();
-    List<cartBeans> selectedItems = cartDAO.getSelectedItems(selectedItemIds);
-
-    double totalPrice = 0;
-    for (cartBeans item : selectedItems) {
-        totalPrice += item.getBookPrice() * item.getQuantity();
-    }
-%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Checkout</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
-        html, body {
-            font-family: 'Zen Maru Gothic', sans-serif;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        .checkout-container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .order-summary {
-            width: 40%;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            margin-right: 20px;
-        }
-        .total-price {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        .checkout-form {
-            width: 55%;
-        }
-        .cancel-button {
-            margin-bottom: 20px;
-        }
-        .img-thumbnail {
-            width: 100px;
-            height: auto;
-        }
+   body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.checkout {
+    width: 80%;
+    margin: 20px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.checkout-item:last-child {
+    border-bottom: none;
+}
+
+.total {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 1.5em;
+}
+
+.cancel-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: red;
+    color: white;
+    padding: .375rem .75rem;
+    border: none;
+    border-radius: .25rem;
+    cursor: pointer;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
     </style>
 </head>
 <body>
-<div class="container">
-    <a href="cart.jsp" class="btn btn-danger cancel-button">Cancel</a>
-    <h1 class="mt-3 mb-4">Checkout</h1>
-    
-    <% 
-        String message = (String) session.getAttribute("message");
-        if (message != null) {
-    %>
-        <div class="alert alert-info" role="alert">
-            <%= message %>
-        </div>
-    <% 
-        session.removeAttribute("message");
-        } 
-    %>
-    
-    <%
-    UserDAO userDAO = new UserDAO();
-    userBeans user = userDAO.getUserByUsername(username);
-    if (user == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
-    
-    <div class="checkout-container">
-        <div class="order-summary">
-            <h3>Order Summary</h3>
-            <ul>
-                <% for (cartBeans item : selectedItems) { %>
-                    <li>
-                        <img src="data:image/png;base64,<%= item.getImageBase64() %>" alt="<%= item.getBookName() %>" class="img-thumbnail">
-                        <%= item.getBookName() %> - <%= item.getQuantity() %> x Rp <%= item.getBookPrice() %>
-                    </li>
-                <% } %>
-            </ul>
-            <div class="total-price">
-                Total: Rp <%= String.format("%,.2f", totalPrice) %>
+    <div class="checkout">
+    <a href="index.jsp" class="btn btn-danger cancel-btn">Cancel</a>
+        <h1>Checkout</h1>
+        <div>
+            <% 
+                String[] cartItems = request.getParameterValues("cartItems[]");
+                int total = 0;
+                if (cartItems != null) {
+                    for (String item : cartItems) {
+                        String[] itemDetails = item.split("\\|");
+                        if (itemDetails.length == 3) {
+                            String title = itemDetails[0];
+                            int price = Integer.parseInt(itemDetails[1]);
+                            int quantity = Integer.parseInt(itemDetails[2]);
+                            int subtotal = price * quantity;
+                            total += subtotal;
+            %>
+            <div class="checkout-item">
+                <span><%= title %></span>
+                <span> - Rp <%= String.format("%,d", price) %> x <%= quantity %> = Rp <%= String.format("%,d", subtotal) %></span>
             </div>
-        </div>
-
-        <div class="checkout-form">
-            <form id="checkout-form" action="CheckoutServlet" method="POST">
-                
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" value="<%= user.getUsername() %>" required readonly>
-            </div>
-
-                
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" value="<%= user.getName() %>" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<%= user.getEmail() %>" required>
-                </div>
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" class="form-control" id="address" name="address" value="<%= user.getAddress() %>" required>
-                </div>
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <select class="form-control" id="city" name="city" required>
-                        <% String[] cities = {"Ambon", "Atambua", "Balikpapan", "Banda Aceh", "Bandar Lampung", "Bandung", "Banyuwangi", "Bau-Bau", "Bekasi", "Bengkulu", "Bima", "Binjai", "Bitung", "Bogor", "Bukittinggi", "Cilegon", "Cimahi", "Cirebon", "Denpasar", "Depok", "Dumai", "Ende", "Gorontalo", "Jakarta", "Jambi", "Jayapura", "Kendari", "Kotamobagu", "Kupang", "Langsa", "Lhokseumawe", "Lubuklinggau", "Luwuk", "Makassar", "Magelang", "Malang", "Manado", "Mataram", "Maumere", "Medan", "Padang", "Padang Sidempuan", "Palangkaraya", "Palembang", "Palopo", "Palu", "Pangkal Pinang", "Pariaman", "Pekanbaru", "Pematang Siantar", "Pontianak", "Praya", "Probolinggo", "Purwokerto", "Ruteng", "Sabang", "Salatiga", "Samarinda", "Semarang", "Serang", "Sibolga", "Singkawang", "Solo", "Sorong", "Sungai Penuh", "Surabaya", "Tanjung Balai", "Tanjung Pandan", "Tanjung Pinang", "Tanjung Selor", "Tarakan", "Tebing Tinggi", "Ternate", "Tomohon", "Waingapu", "Yogyakarta"};
-
-                        for(String city : cities) {
-                            if (city.equals(user.getCity())) {
-                                %>
-                                <option value="<%= city %>" selected><%= city %></option>
-                                <%
-                            } else {
-                                %>
-                                <option value="<%= city %>"><%= city %></option>
-                                <%
-                            }
+            <% 
                         }
-                        %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="postalCode">Postal Code</label>
-                    <input type="text" class="form-control" id="postalCode" name="postalCode" value="<%= user.getPostCode() %>" required>
-                </div>
-                <div class="form-group">
-                    <label for="paymentMethod">Payment Method</label>
-                    <select class="form-control" id="paymentMethod" name="paymentMethod" required>
-                        <option value="credit_card">Credit Card</option>
-                        <option value="bank_transfer">Bank Transfer</option>
-                        <option value="paypal">PayPal</option>
-                    </select>
-                </div>
-                <input type="hidden" name="selectedItems" value="<%= String.join(",", selectedItemsParam) %>">
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+                    }
+                } 
+            %>
         </div>
+        <div class="total">Total: Rp <%= String.format("%,d", total) %></div>
+        <!-- Formulir pembayaran -->
+        <form action="processPayment.jsp" method="post">
+            <input type="hidden" name="totalAmount" value="<%= total %>">
+            <!-- Tambahkan elemen input lain sesuai kebutuhan, misalnya informasi kartu kredit -->
+            <button type="submit">Proceed to Payment</button>
+        </form>
     </div>
-</div>
-              
 </body>
-
 </html>

@@ -11,7 +11,7 @@
         html, body {
             height: 100%;
             margin: 0;
-            font-family: 'Zen Maru Gothic', sans-serif;
+            font-family: Zen Maru Gothic;
             background: url('image/gambar-login.png') no-repeat center center fixed;
             background-size: cover;
         }
