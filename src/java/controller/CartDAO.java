@@ -37,25 +37,28 @@ public class CartDAO {
     }
 
     public List<cartBeans> getCartItems(String username) throws SQLException {
-        List<cartBeans> cartItems = new ArrayList<>();
-        String query = "SELECT * FROM keranjang WHERE username = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    cartBeans book = new cartBeans();
-                    book.setId(rs.getInt("id_keranjang"));
-                    book.setBookName(rs.getString("nama_buku"));
-                    book.setBookPrice(rs.getDouble("harga"));
-                    book.setQuantity(rs.getInt("total_beli"));
-                    book.setBookImage(rs.getBlob("gambar_buku").getBinaryStream());
-                    cartItems.add(book);
-                }
+    List<cartBeans> cartItems = new ArrayList<>();
+    String query = "SELECT k.*, b.stock_buku FROM keranjang k JOIN buku b ON k.nama_buku = b.nama_buku WHERE k.username = ?";
+    try (Connection connection = getConnection();
+         PreparedStatement ps = connection.prepareStatement(query)) {
+        ps.setString(1, username);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                cartBeans book = new cartBeans();
+                book.setId(rs.getInt("id_keranjang"));
+                book.setBookName(rs.getString("nama_buku"));
+                book.setBookPrice(rs.getDouble("harga"));
+                book.setQuantity(rs.getInt("total_beli"));
+                book.setBookImage(rs.getBlob("gambar_buku").getBinaryStream());
+                book.setStock(rs.getInt("stock_buku")); // Set stock
+                cartItems.add(book);
             }
         }
-        return cartItems;
     }
+    return cartItems;
+}
+
+
 
     public List<cartBeans> getSelectedItems(List<Integer> itemIds) throws SQLException {
         List<cartBeans> selectedItems = new ArrayList<>();

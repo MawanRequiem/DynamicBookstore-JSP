@@ -13,6 +13,7 @@ public class cartBeans {
     private InputStream bookImage;
     private int quantity;
     private String username;
+    private int stock; // New field
 
     // Getters and Setters
     public int getId() {
@@ -62,6 +63,13 @@ public class cartBeans {
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
     // Convert InputStream to Base64 for image display in HTML

@@ -162,12 +162,12 @@
                                     <p class="book-price">Rp <%= item.getBookPrice() %></p>
                                 </div>
                                 <div class="quantity-control">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(this, -1, '<%= item.getId() %>')">-</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(this, -1, '<%= item.getId() %>', '<%= item.getStock() %>')">-</button>
                                     <span class="quantity"><%= item.getQuantity() %></span>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(this, 1, '<%= item.getId() %>')">+</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(this, 1, '<%= item.getId() %>', '<%= item.getStock() %>')">+</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-danger remove-button" onclick="confirmRemove('<%= item.getId() %>')">Remove</button>
+                            <button type="button" class="btn btn-danger remove-button" onclick="changeQuantity(this, -<%= item.getQuantity() %>, '<%= item.getId() %>', '<%= item.getStock() %>')">Remove</button>
                         </div>
                     <% } %>
                 </form>
@@ -205,6 +205,26 @@
         </div>
     </div>
 
+    <!-- Alert Modal -->
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alertModalLabel">Peringatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Modal content will be set by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let totalHarga = 0;
 
@@ -223,36 +243,45 @@
             document.getElementById('remove-selected').style.display = isAnyCheckboxChecked ? 'inline-block' : 'none';
         }
 
-         function changeQuantity(button, change, cartId) {
+        function changeQuantity(button, change, bookId, maxStock) {
             const quantitySpan = button.parentNode.querySelector('.quantity');
             let quantity = parseInt(quantitySpan.innerText);
             const checkbox = button.parentNode.parentNode.querySelector('.book-checkbox');
 
-            quantity = Math.max(0, quantity + change);
-            quantitySpan.innerText = quantity;
-            checkbox.setAttribute('data-quantity', quantity);
+            quantity += change;
 
-            if (quantity === 0) {
-                if (confirm('Apakah yakin untuk menghapus barang dari cart?')) {
-                    const card = document.getElementById('cart-item-' + cartId);
-                    card.parentNode.removeChild(card);
-                    removeFromCart(cartId);
-                } else {
-                    quantitySpan.innerText = 1;
-                    checkbox.setAttribute('data-quantity', 1);
-                }
-            } else {
-                updateCartItem(cartId, quantity);
+            if (quantity > maxStock) {
+                showModal('Kuantitas melebihi stock yang ada.');
+                return;
             }
 
+            if (quantity <= 0) {
+                if (confirm('Apakah yakin untuk menghapus barang dari cart?')) {
+                    const card = document.getElementById('cart-item-' + bookId);
+                    card.parentNode.removeChild(card);
+                    removeFromCart(bookId);
+                } else {
+                    quantity = 1;
+                }
+            }
+
+            quantitySpan.innerText = quantity;
+            checkbox.setAttribute('data-quantity', quantity);
+            updateCartItem(bookId, quantity);
             updateTotal();
         }
 
-        function confirmRemove(cartId) {
+        function showModal(message) {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerText = message;
+            $('#alertModal').modal('show');
+        }
+
+        function confirmRemove(bookId) {
             if (confirm('Apakah yakin untuk menghapus barang dari cart?')) {
-                const card = document.getElementById('cart-item-' + cartId);
+                const card = document.getElementById('cart-item-' + bookId);
                 card.parentNode.removeChild(card);
-                removeFromCart(cartId);
+                removeFromCart(bookId);
             }
         }
 
