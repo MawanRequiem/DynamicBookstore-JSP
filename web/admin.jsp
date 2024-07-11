@@ -224,7 +224,9 @@
                         Menu
                     </a>
                     <div class="dropdown-menu dropdown-menu-right custom-dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item custom-dropdown-item" href="admin.jsp">Home</a>
+                      <a class="dropdown-item custom-dropdown-item" href="index.jsp?user=admin">Home User</a>
+
+                        <a class="dropdown-item custom-dropdown-item" href="admin.jsp">Home Admin</a>
                         <a class="dropdown-item custom-dropdown-item" href="AdminTransactionServlet">Pesanan</a>
                         <a class="dropdown-item custom-dropdown-item" href="logoutServlet">Logout</a>
                     </div>

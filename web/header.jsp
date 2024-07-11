@@ -151,34 +151,43 @@
 </head>
 <body>
     <%
+         String userType = request.getParameter("user");
+        if ("admin".equals(userType)) {
+            session.setAttribute("isAdmin", true);
+        }
+
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
         String username = (String) session.getAttribute("uName");
         boolean isLoggedIn = (username != null);
-    %>
-    <header>
+    %>    <header>
         <div class="top-bar">
             <a href="index.jsp" class="author-link">Tere Liye</a>
             <div class="navbar">
                 <nav>
-                    <form id="searchForm" action="searchServlet" method="GET" class="search-container" onsubmit="performSearch(event)">
+                     <form id="searchForm" action="searchServlet" method="GET" class="search-container" onsubmit="performSearch(event)">
                         <input type="search" id="search-input" name="query" class="form-control" placeholder="Cari Produk, Judul Buku, Penulis" onkeyup="getSearchSuggestions(this.value)">
                         <button type="submit">
-                            <img src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/search-512.png" alt="Search"> <!-- Online search icon -->
+                            <img src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/search-512.png" alt="Search">
                         </button>
                     </form>
                     <div id="suggestionsContainer" class="suggestions-container"></div>
                     <a href="index.jsp" class="navtext">Home</a>
                     <a href="allbooklist.jsp" class="navtext">All Book</a>
                     <a href="cart.jsp" class="navtext">Cart</a>
-                    <% if (isLoggedIn) { %>
-                        <a href="detail.jsp" class="navtext"><%= username %></a>
+                    <a href="TranshistoryServlet" class="navtext">Pesanan</a>
+                    <% if (isAdmin != null && isAdmin) { %>
+                        <a href="admin.jsp" class="navtext"><%= username %></a>
                     <% } else { %>
-                        <a href="login.jsp" class="navtext">Login</a>
+                        <% if (isLoggedIn) { %>
+                            <a href="detail.jsp" class="navtext"><%= username %></a>
+                        <% } else { %>
+                            <a href="login.jsp" class="navtext">Login</a>
+                        <% } %>
                     <% } %>
                 </nav>
             </div>
         </div>
     </header>
-
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>

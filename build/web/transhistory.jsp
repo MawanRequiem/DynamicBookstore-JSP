@@ -8,23 +8,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction History</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-custom {
+            border: 1px solid #dee2e6;
+            border-collapse: collapse;
+        }
+        .table-custom th, .table-custom td {
+            border: 1px solid #dee2e6;
+        }
+        .book-table {
+            margin-bottom: 0;
+        }
+        .book-table th, .book-table td {
+            border: none;
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container mt-5">
         <h2>Transaction History</h2>
-        <table class="table table-striped">
+        <table class="table table-custom">
             <thead>
                 <tr>
+                    <th rowspan="2">Order ID</th>
+                    <th rowspan="2">Total Price</th>
+                    <th rowspan="2">Order Date</th>
+                    <th rowspan="2">Payment Method</th>
+                </tr>
+                <tr>
                     <th>Book Name</th>
-                    <th>User Name</th>
-                    <th>Buyer Name</th>
-                    <th>Book Price</th>
-                    <th>Date</th>
                     <th>Quantity</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Payment Method</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,24 +47,29 @@
                     List<transaksiBeans> transaksiList = (List<transaksiBeans>) request.getAttribute("transaksiList");
                     if (transaksiList != null && !transaksiList.isEmpty()) {
                         for (transaksiBeans transaksi : transaksiList) {
+                            String[] bookNames = transaksi.getBookNames().split(", ");
+                            String[] quantities = transaksi.getQuantities().split(", ");
                 %>
                 <tr>
-                    <td><%= transaksi.getNameBuku() %></td>
-                    <td><%= transaksi.getNamaUser() %></td>
-                    <td><%= transaksi.getNamaPembeli() %></td>
-                    <td><%= transaksi.getHargaBuku() %></td>
-                    <td><%= transaksi.getTanggal() %></td>
-                    <td><%= transaksi.getJumlah() %></td>
-                    <td><%= transaksi.getEmail() %></td>
-                    <td><%= transaksi.getAlamat() %></td>
-                    <td><%= transaksi.getMetodePem() %></td>
+                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getOrderId() %></td>
+                    <td><%= bookNames[0] %></td>
+                    <td><%= quantities[0] %></td>
+                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getTotalPrice() %></td>
+                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getOrderDate() %></td>
+                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getPaymentMethod() %></td>
                 </tr>
+                <% for (int i = 1; i < bookNames.length; i++) { %>
+                <tr>
+                    <td><%= bookNames[i] %></td>
+                    <td><%= quantities[i] %></td>
+                </tr>
+                <% } %>
                 <%
                         }
                     } else {
                 %>
                 <tr>
-                    <td colspan="9">No transactions found</td>
+                    <td colspan="6">No transactions found</td>
                 </tr>
                 <%
                     }

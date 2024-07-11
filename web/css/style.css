@@ -44,7 +44,7 @@ z-index: -1;
 .heading span {
 font-size: 3rem;
 padding: .5rem 2rem;
-background: #fff;
+background: #FFFFEF;
 }
 
 /* Header Styling */
@@ -615,8 +615,23 @@ header {
   will-change: transform;
   margin-bottom: 30px;
   }
-  
-  .card-best, .card-new {
+  .out-of-stock {
+  background-color: gray;
+  pointer-events: none;
+  cursor: not-allowed;
+  position: relative;
+        }
+  .out-of-stock::after {
+  content: "SOLD OUT";
+  color: red;
+  font-size: 50px;
+  font-weight: bold;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+        }  
+  .card-best, .card-new, .out-of-stock {
   min-width: 200px;
   margin: 10px;
   padding: 10px;

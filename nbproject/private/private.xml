@@ -3,10 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/TereLiye-asli/src/java/model/bookBeans.java</file>
-            <file>file:/D:/TereLiye-asli/src/java/controller/adminDao.java</file>
-            <file>file:/D:/TereLiye-asli/src/java/servlet/adminServlet.java</file>
-            <file>file:/D:/TereLiye-asli/web/admin.jsp</file>
+            <file>file:/D:/TereLiye-asli/src/java/servlet/CheckoutServlet.java</file>
+            <file>file:/D:/TereLiye-asli/src/java/servlet/TranshistoryServlet.java</file>
+            <file>file:/D:/TereLiye-asli/web/adminRiwayatTransaksi.jsp</file>
+            <file>file:/D:/TereLiye-asli/src/java/servlet/AdminTransactionServlet.java</file>
+            <file>file:/D:/TereLiye-asli/src/java/controller/adminTransactionDAO.java</file>
+            <file>file:/D:/TereLiye-asli/src/java/servlet/updateServlet.java</file>
         </group>
     </open-files>
 </project-private>

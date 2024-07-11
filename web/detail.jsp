@@ -18,6 +18,15 @@
                 padding: 0;
                 background-color: #FFFFEF;
             }
+            
+            .card-body {
+                font-family: Zen Maru Ghotic;
+                -ms-flex: 1 1 auto;
+                flex: 1 1 auto;
+                min-height: 1px;
+                padding: 1.25rem;
+                    }
+
         .card {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             background-color: #FFFFEF;

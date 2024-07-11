@@ -33,21 +33,25 @@
         #modal-img {
             width: 180px;
         }
-        .out-of-stock {
-            background-color: #ccc;
+      .out-of-stock {
+            background-color: gray;
             pointer-events: none;
             cursor: not-allowed;
             position: relative;
+            opacity: 0.6;
         }
-         .out-of-stock::after {
-            content: "Out of Stock";
+        
+        .out-of-stock::after {
+            content: "SOLD OUT";
             color: red;
+            font-size: 20px;
             font-weight: bold;
-            font-size: 30px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px;
         }
     </style>
     <title>Tere Liye Bookstore</title>
@@ -186,7 +190,7 @@
             }
         });
 
-        function openModal(event, id, title, price, genre, synopsis, imgSrc, stock) {
+         function openModal(event, id, title, price, genre, synopsis, imgSrc, stock) {
             event.preventDefault();
             if (stock <= 0) return; // Prevent modal for out of stock books
 
@@ -211,7 +215,6 @@
         function closeModal() {
             document.getElementById('modal').style.display = "none";
         }
-
         window.onclick = function(event) {
             const modal = document.getElementById('modal');
             if (event.target == modal) {

@@ -290,6 +290,26 @@
     </div>
 </div>
 
+<!-- Modal No Items Selected -->
+<div class="modal fade" id="noItemsSelectedModal" tabindex="-1" role="dialog" aria-labelledby="noItemsSelectedModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noItemsSelectedModalLabel">Peringatan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Pilih setidaknya satu item untuk melanjutkan.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 let totalHarga = 0;
 let itemToRemoveId = null;
@@ -325,12 +345,6 @@ function changeQuantity(button, change, bookId, maxStock) {
     if (quantity <= 0) {
         itemToRemoveId = bookId;
         $('#confirmRemoveItemModal').modal('show');
-        return;
-    }
-
-    if (quantity === 1 && change < 0) {
-        itemToReduceId = bookId;
-        $('#confirmReduceItemModal').modal('show');
         return;
     }
 
@@ -385,7 +399,7 @@ function updateCartItem(cartId, quantity) {
 
 function validateCheckout() {
     if (document.querySelectorAll('.book-checkbox:checked').length === 0) {
-        alert('Pilih setidaknya satu item untuk melanjutkan.');
+        $('#noItemsSelectedModal').modal('show');
         return false;
     }
     return true;

@@ -121,6 +121,12 @@
             transition: background 0.3s ease;
         }
 
+            .btn-secondary {
+            color: white;
+            background-color: #EB6611;
+            border-color: #EB6611;
+        }
+
         .btn-primary {
             background: #EB6611;
         }

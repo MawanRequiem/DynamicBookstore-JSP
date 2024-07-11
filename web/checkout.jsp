@@ -41,11 +41,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
-            /* Menghilangkan margin dan padding pada body dan html */
-            body, html {
-                font-family: Zen Maru Ghotic;
+        body, html {
+            font-family: 'Zen Maru Gothic', sans-serif;
             background-color: #FFFFEF;
         }
         .container {
@@ -97,6 +99,33 @@
             background-color: #0056b3;
             border-color: #004085;
         }
+        .submit-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .submit-button {
+            width: 200px;
+            height: 50px;
+        }
+        .btn-success {
+            color: #fff;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-secondary {
+            color: #fff;
+            background-color: red;
+            border-color: red;
+        }
+        .modal-body {
+            text-align: center;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -144,7 +173,7 @@
 
         <!-- Card for Checkout Form -->
         <div class="checkout-form-card">
-            <form id="checkout-form" action="CheckoutServlet" method="POST">
+            <form id="checkout-form" action="CheckoutServlet" method="POST" onsubmit="event.preventDefault(); $('#checkoutModal').modal('show');">
                 
                 <div class="form-group">
                     <label for="username">Username</label>
@@ -195,10 +224,45 @@
                     </select>
                 </div>
                 <input type="hidden" name="selectedItems" value="<%= String.join(",", selectedItemsParam) %>">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                
+                <div class="submit-button-container">
+                    <button type="submit" class="btn btn-primary submit-button">Submit</button>
+                </div>
+                
             </form>
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkoutModalLabel">Checkout Successful</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Checkout berhasil, segera selesaikan pembayaran!
+            </div>
+            <div class="modal-footer">
+                <a href="cart.jsp" class="btn btn-secondary" id="cancelBtn">Cancel</a>
+                <button type="button" class="btn btn-success" id="completePaymentBtn">Selesaikan Pembayaran</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('completePaymentBtn').addEventListener('click', function() {
+        document.getElementById('checkout-form').submit();
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+        $('#checkoutModal').modal('hide');
+    });
+</script>
 </body>
 </html>

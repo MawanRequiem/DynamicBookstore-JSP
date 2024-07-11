@@ -1,3 +1,4 @@
+// TranshistoryServlet.java
 package servlet;
 
 import controller.TransactionDAO;
@@ -12,9 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-/**
- * TranshistoryServlet for handling transaction history requests.
- */
 @WebServlet(name = "TranshistoryServlet", urlPatterns = {"/TranshistoryServlet"})
 public class TranshistoryServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -32,7 +30,7 @@ public class TranshistoryServlet extends HttpServlet {
         List<transaksiBeans> transaksiList = transaksiDAO.getTransaksiByUsername(username);
 
         request.setAttribute("transaksiList", transaksiList);
-        request.getRequestDispatcher("transhistory.jsp").forward(request, response);
+        request.getRequestDispatcher("pesanan.jsp").forward(request, response);
     }
 
     @Override

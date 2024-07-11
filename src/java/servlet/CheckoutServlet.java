@@ -4,10 +4,10 @@ import controller.CheckoutDAO;
 import controller.CartDAO;
 import model.cartBeans;
 import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,14 +67,18 @@ public class CheckoutServlet extends HttpServlet {
         String paymentMethod = request.getParameter("paymentMethod");
 
         CheckoutDAO checkoutDAO = new CheckoutDAO();
-
+        
+        // Set expiry time to 2 minutes from now
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 2);
+        Timestamp expiryTime = new Timestamp(calendar.getTimeInMillis());
         boolean orderPlaced;
         try {
-            orderPlaced = checkoutDAO.placeOrder(username ,name, email, address, city, postalCode,totalPrice, paymentMethod, selectedItemQuantities);
+            orderPlaced = checkoutDAO.placeOrder(username, name, email, address, city, postalCode, totalPrice, paymentMethod, selectedItemQuantities, expiryTime);
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "An error occurred while processing your order. Please try again.");
-            response.sendRedirect("eror.jsp");
+            response.sendRedirect("error.jsp");
             return;
         }
 
@@ -91,6 +95,6 @@ public class CheckoutServlet extends HttpServlet {
         } else {
             session.setAttribute("message", "There was an issue with your order. Please try again.");
         }
-        response.sendRedirect("checkout.jsp");
+        response.sendRedirect("TranshistoryServlet");
     }
 }

@@ -39,20 +39,25 @@
         #modal-img {
             width: 180px;
         }
-        .out-of-stock {
-            background-color: #ccc;
+       .out-of-stock {
+            background-color: gray;
             pointer-events: none;
             cursor: not-allowed;
             position: relative;
+            opacity: 0.6;
         }
+        
         .out-of-stock::after {
-            content: "Out of Stock";
+            content: "SOLD OUT";
             color: red;
             font-size: 20px;
+            font-weight: bold;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px;
         }
     </style>
     <script src="jQuery 3.7.1.js"></script>

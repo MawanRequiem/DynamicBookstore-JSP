@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Results</title>
-        <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
         }
         .result-item img {
             max-width: 30%;
-            height: auto;
+            height: 200px;
             border-radius: 8px;
         }
         .result-item h3 {
@@ -52,6 +52,30 @@
         .price {
             font-weight: bold;
             color: black;
+        }
+        #modal-img{
+            width: 180px;
+            }
+            
+       .out-of-stock {
+            background-color: gray;
+            pointer-events: none;
+            cursor: not-allowed;
+            position: relative;
+            opacity: 0.6;
+        }
+        
+        .out-of-stock::after {
+            content: "SOLD OUT";
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px;
         }
         .modal {
             display: none;
@@ -72,6 +96,8 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
+            max-height: 80vh; /* Make modal scrollable */
+            overflow-y: auto; /* Add vertical scrollbar if needed */
         }
         .close {
             color: #aaa;
@@ -86,53 +112,11 @@
             cursor: pointer;
         }
     </style>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        
-           function openModal(event, id, title, price, genre, synopsis, imgSrc) {
-        event.preventDefault();
-        const modal = document.getElementById('modal');
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-price').innerText = 'Rp ' + price;
-        document.getElementById('modal-genre').innerText = genre;
-        document.getElementById('modal-synopsis').innerText = synopsis;
-        document.getElementById('modal-img').src = imgSrc;
-        document.getElementById('modal-book-id').value = id;
-        document.getElementById('modal-book-name').value = title;
-        document.getElementById('modal-book-price').value = price;
-        modal.style.display = "block";
-    }
-
-    function closeModal() {
-        document.getElementById('modal').style.display = "none";
-    }
-
-    function getSearchSuggestions(query) {
-        if (query.length === 0) {
-            document.getElementById('suggestionsContainer').innerHTML = '';
-            return;
-        }
-
-        $.ajax({
-            url: 'searchServlet',
-            method: 'GET',
-            data: { query: query, action: 'suggest' },
-            success: function(response) {
-                $('#suggestionsContainer').html(response);
-            },
-            error: function() {
-                $('#suggestionsContainer').html('<p>Error retrieving suggestions.</p>');
-            }
-        });
-    }
-
-    function selectSuggestion(value) {
-        document.getElementById('search-input').value = value;
-        document.getElementById('suggestionsContainer').innerHTML = '';
-        document.getElementById('searchForm').submit();
-    }
-        function openModal(event, id, title, price, genre, synopsis, imgSrc) {
+       function openModal(event, id, title, price, genre, synopsis, imgSrc, stock) {
             event.preventDefault();
+            if (stock <= 0) return; // Prevent modal for out of stock books
+
             const modal = document.getElementById('modal');
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-price').innerText = 'Rp ' + price;
@@ -142,6 +126,12 @@
             document.getElementById('modal-book-id').value = id;
             document.getElementById('modal-book-name').value = title;
             document.getElementById('modal-book-price').value = price;
+            document.getElementById('modal-stock').innerText = 'Stock buku: ' + stock + ' item';
+            if (stock > 0) {
+                document.getElementById('modal-add-to-cart').disabled = false;
+            } else {
+                document.getElementById('modal-add-to-cart').disabled = true;
+            }
             modal.style.display = "block";
         }
 
@@ -165,13 +155,16 @@
         <%
                 for (bookBeans book : searchResults) {
         %>
-                <div class="result-item">
+                <div class="result-item <%= book.getStock() <= 0 ? "out-of-stock" : "" %>">
                     <a href="#" onclick="openModal(event, '<%= book.getId() %>', '<%= book.getNama() %>', '<%= book.getHarga() %>', '<%= book.getGenre() %>', '<%= book.getDeskripsi() %>', 'imageServlet?id=<%= book.getId() %>')">
                         <img src="imageServlet?id=<%= book.getId() %>" alt="<%= book.getNama() %>">
                         <h3><%= book.getNama() %></h3>
+                        <p>Genre: <%= book.getGenre() %></p>
+                        <p class="price">Rp <%= book.getHarga() %></p>
+                        <% if (book.getStock() > 0) { %>
+                            <p>Stock: <%= book.getStock() %> item</p>
+                        <% } %>
                     </a>
-                    <p>Genre: <%= book.getGenre() %></p>
-                    <p class="price">Rp <%= book.getHarga() %></p>
                 </div>
         <%
                 }

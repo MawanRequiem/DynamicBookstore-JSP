@@ -1,73 +1,73 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Arya Prathama
- */
-    // TransaksiBeans.java
+import java.sql.Timestamp;
 
 public class transaksiBeans {
-    private String nameBuku;
-    private String namaUser;
-    private String namaPembeli;
-    private double hargaBuku;
-    private String tanggal;
-    private int jumlah;
+    private int orderItem;
+    private int orderId;
+    private String username;
+    private String name;
     private String email;
-    private String alamat;
-    private String metodePem;
+    private String address;
+    private String city;
+    private String postalCode;
+    private String paymentMethod;
+    private double totalPrice;
+    private Timestamp orderDate;
+    private String status;
+    private String kodePembayaran;
+    private String bookNames; // Combined book names
+    private String quantities; // Combined quantities
+    private Timestamp expiryTime; // New field for expiry time
+    private boolean isStockReturned; // New field for stock returned status
 
-    // Getters and setters
-    public String getNameBuku() {
-        return nameBuku;
+    public Timestamp getExpiryTime() {
+        return expiryTime;
     }
 
-    public void setNameBuku(String nameBuku) {
-        this.nameBuku = nameBuku;
+    public void setExpiryTime(Timestamp expiryTime) {
+        this.expiryTime = expiryTime;
     }
 
-    public String getNamaUser() {
-        return namaUser;
+    public boolean isStockReturned() {
+        return isStockReturned;
     }
 
-    public void setNamaUser(String namaUser) {
-        this.namaUser = namaUser;
+    public void setStockReturned(boolean isStockReturned) {
+        this.isStockReturned = isStockReturned;
     }
 
-    public String getNamaPembeli() {
-        return namaPembeli;
+    // Getters and Setters for all fields
+    public int getOrderItem() {
+        return orderItem;
     }
 
-    public void setNamaPembeli(String namaPembeli) {
-        this.namaPembeli = namaPembeli;
+    public void setOrderItem(int orderItem) {
+        this.orderItem = orderItem;
     }
 
-    public double getHargaBuku() {
-        return hargaBuku;
+    public int getOrderId() {
+        return orderId;
     }
 
-    public void setHargaBuku(double hargaBuku) {
-        this.hargaBuku = hargaBuku;
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
-    public String getTanggal() {
-        return tanggal;
+    public String getUsername() {
+        return username;
     }
 
-    public void setTanggal(String tanggal) {
-        this.tanggal = tanggal;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public int getJumlah() {
-        return jumlah;
+    public String getName() {
+        return name;
     }
 
-    public void setJumlah(int jumlah) {
-        this.jumlah = jumlah;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -78,20 +78,83 @@ public class transaksiBeans {
         this.email = email;
     }
 
-    public String getAlamat() {
-        return alamat;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAlamat(String alamat) {
-        this.alamat = alamat;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getMetodePem() {
-        return metodePem;
+    public String getCity() {
+        return city;
     }
 
-    public void setMetodePem(String metodePem) {
-        this.metodePem = metodePem;
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Timestamp getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Timestamp orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getKodePembayaran() {
+        return kodePembayaran;
+    }
+
+    public void setKodePembayaran(String kodePembayaran) {
+        this.kodePembayaran = kodePembayaran;
+    }
+
+    public String getBookNames() {
+        return bookNames;
+    }
+
+    public void setBookNames(String bookNames) {
+        this.bookNames = bookNames;
+    }
+
+    public String getQuantities() {
+        return quantities;
+    }
+
+    public void setQuantities(String quantities) {
+        this.quantities = quantities;
     }
 }
-
