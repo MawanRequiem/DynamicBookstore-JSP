@@ -11,22 +11,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
-            /* Menghilangkan margin dan padding pada body dan html */
-            body, html {
-                font-family: Zen Maru Ghotic;
-                margin: 0;
-                padding: 0;
-                background-color: #FFFFEF;
-            }
-            
-            .card-body {
-                font-family: Zen Maru Ghotic;
-                -ms-flex: 1 1 auto;
-                flex: 1 1 auto;
-                min-height: 1px;
-                padding: 1.25rem;
-                    }
-
+        body, html {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FFFFEF;
+        }
+        .card-body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            flex: 1 1 auto;
+            padding: 1.25rem;
+        }
         .card {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             background-color: #FFFFEF;
@@ -70,10 +65,18 @@
         #togglePassword {
             cursor: pointer;
         }
+        .update-btn-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .update-btn-group button {
+            flex: 1;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
-    
 <%
     String username = (String) session.getAttribute("uName");
     if (username == null) {
@@ -98,101 +101,56 @@
                     Account Details
                 </div>
                 <div class="card-body">
-                    <div class="info-group">
-                        <label for="name">Name</label>
-                        <p class="form-control-plaintext" id="name"><%= user.getName() %></p>
-                    </div>
-                    <div class="info-group">
-                        <label for="username">Username</label>
-                        <p class="form-control-plaintext" id="username"><%= user.getUsername() %></p>
-                    </div>
-                    <div class="info-group">
-                        <label for="email">Email</label>
-                        <p class="form-control-plaintext" id="email"><%= user.getEmail() %></p>
-                    </div>
-                    
-                    <div class="info-group">
-                        <label for="address">Address</label>
-                        <%
-                            String address = user.getAddress();
-                            if (address == null || address.isEmpty()) {
-                        %>
-                            <form method="post" action="UpdateServlet">
-                                <input type="text" name="address" class="form-control" placeholder="Enter your address" required>
-                                <button type="submit" class="btn btn-primary mt-2">Submit</button>
-                            </form>
-                        <%
-                            } else {
-                        %>
-                            <p class="form-control-plaintext" id="address"><%= address %></p>
-                        <%
-                            }
-                        %>
-                    </div>
-                    
-                    <div class="info-group">
-                        <label for="city">City</label>
-                        <%
-                            String city = user.getCity();
-                            if (city == null || city.isEmpty()) {
-                        %>
-                            <form method="post" action="UpdateServlet">
-                                <select name="city" class="form-control" required>
-                                    <option value="" disabled selected>Select your city</option>
-                                    <% String[] cities = {"Ambon", "Atambua", "Balikpapan", "Banda Aceh", "Bandar Lampung", "Bandung", "Banyuwangi", "Bau-Bau", "Bekasi", "Bengkulu", "Bima", "Binjai", "Bitung", "Bogor", "Bukittinggi", "Cilegon", "Cimahi", "Cirebon", "Denpasar", "Depok", "Dumai", "Ende", "Gorontalo", "Jakarta", "Jambi", "Jayapura", "Kendari", "Kotamobagu", "Kupang", "Langsa", "Lhokseumawe", "Lubuklinggau", "Luwuk", "Makassar", "Magelang", "Malang", "Manado", "Mataram", "Maumere", "Medan", "Padang", "Padang Sidempuan", "Palangkaraya", "Palembang", "Palopo", "Palu", "Pangkal Pinang", "Pariaman", "Pekanbaru", "Pematang Siantar", "Pontianak", "Praya", "Probolinggo", "Purwokerto", "Ruteng", "Sabang", "Salatiga", "Samarinda", "Semarang", "Serang", "Sibolga", "Singkawang", "Solo", "Sorong", "Sungai Penuh", "Surabaya", "Tanjung Balai", "Tanjung Pandan", "Tanjung Pinang", "Tanjung Selor", "Tarakan", "Tebing Tinggi", "Ternate", "Tomohon", "Waingapu", "Yogyakarta"};
-                                    for(String cityOption : cities) {
+                    <form method="post" action="UpdateServlet">
+                        <input type="hidden" name="id" value="<%= user.getId() %>">
+                        <div class="info-group">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" class="form-control" id="name" value="<%= user.getName() != null ? user.getName() : "" %>" placeholder="Enter your name">
+                        </div>
+                        <div class="info-group">
+                            <label for="username">Username</label>
+                            <p class="form-control-plaintext" id="username"><%= user.getUsername() %></p>
+                        </div>
+                        <div class="info-group">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" class="form-control" id="email" value="<%= user.getEmail() != null ? user.getEmail() : "" %>" placeholder="Enter your email">
+                        </div>
+                        <div class="info-group">
+                            <label for="address">Address</label>
+                            <input type="text" name="address" class="form-control" id="address" value="<%= user.getAddress() != null ? user.getAddress() : "" %>" placeholder="Enter your address">
+                        </div>
+                        <div class="info-group">
+                            <label for="city">City</label>
+                            <select name="city" class="form-control" required>
+                                <option value="" disabled>Select your city</option>
+                                <% String[] cities = {"Ambon", "Atambua", "Balikpapan", "Banda Aceh", "Bandar Lampung", "Bandung", "Banyuwangi", "Bau-Bau", "Bekasi", "Bengkulu", "Bima", "Binjai", "Bitung", "Bogor", "Bukittinggi", "Cilegon", "Cimahi", "Cirebon", "Denpasar", "Depok", "Dumai", "Ende", "Gorontalo", "Jakarta", "Jambi", "Jayapura", "Kendari", "Kotamobagu", "Kupang", "Langsa", "Lhokseumawe", "Lubuklinggau", "Luwuk", "Makassar", "Magelang", "Malang", "Manado", "Mataram", "Maumere", "Medan", "Padang", "Padang Sidempuan", "Palangkaraya", "Palembang", "Palopo", "Palu", "Pangkal Pinang", "Pariaman", "Pekanbaru", "Pematang Siantar", "Pontianak", "Praya", "Probolinggo", "Purwokerto", "Ruteng", "Sabang", "Salatiga", "Samarinda", "Semarang", "Serang", "Sibolga", "Singkawang", "Solo", "Sorong", "Sungai Penuh", "Surabaya", "Tanjung Balai", "Tanjung Pandan", "Tanjung Pinang", "Tanjung Selor", "Tarakan", "Tebing Tinggi", "Ternate", "Tomohon", "Waingapu", "Yogyakarta"};
+                                for(String cityOption : cities) {
                                 %>
-                                    <option value="<%= cityOption %>"><%= cityOption %></option>
+                                    <option value="<%= cityOption %>" <%= cityOption.equals(user.getCity()) ? "selected" : "" %>><%= cityOption %></option>
                                 <% } %>
-                                </select>
-                                <button type="submit" class="btn btn-primary mt-2">Submit</button>
-                            </form>
-                        <%
-                            } else {
-                        %>
-                            <p class="form-control-plaintext" id="city"><%= city %></p>
-                        <%
-                            }
-                        %>
-                    </div>
-                    
-                    <div class="info-group">
-                        <label for="postCode">Post Code</label>
-                        <%
-                            String postCode = user.getPostCode();
-                            if (postCode == null || postCode.isEmpty()) {
-                        %>
-                            <form method="post" action="UpdateServlet">
-                                <input type="text" name="postCode" class="form-control" placeholder="Enter your post code" required>
-                                <button type="submit" class="btn btn-primary mt-2">Submit</button>
-                            </form>
-                        <%
-                            } else {
-                        %>
-                            <p class="form-control-plaintext" id="postCode"><%= postCode %></p>
-                        <%
-                            }
-                        %>
-                    </div>
-                    
-                   <div class="info-group">
-                      <label for="password">Password</label>
-                      <div class="input-group">
-                          <input type="password" class="form-control" id="password" value="<%= user.getPassword() %>">
-                          <div class="input-group-append">
-                              <span class="input-group-text" id="togglePassword">
-                                  <i class="fas fa-eye"></i>
-                              </span>
-                          </div>
-                      </div>
-                  </div>
-                      
-                    <div class="btn-group-custom">
-                        <a href="update.jsp" class="btn btn-primary">Update</a>
-                        <button type="button" class="btn btn-custom-red" onclick="confirmLogout()">Logout</button>
-                        <button type="button" class="btn btn-custom-red" onclick="confirmDelete()">Delete Account</button>
-                        <button type="button" class="btn btn-custom-red" onclick="viewHistory()">View History</button>
-                    </div>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label for="postCode">Post Code</label>
+                            <input type="text" name="postCode" class="form-control" id="postCode" value="<%= user.getPostCode() != null ? user.getPostCode() : "" %>" placeholder="Enter your post code">
+                        </div>
+                        <div class="info-group">
+                            <label for="password">Password</label>
+                            <div class="input-group">
+                                <input type="password" name="password" class="form-control" id="password" value="<%= user.getPassword() %>" placeholder="Enter your password">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="update-btn-group">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="button" class="btn btn-custom-red" onclick="confirmLogout()">Logout</button>
+                            <button type="button" class="btn btn-custom-red" onclick="confirmDelete()">Delete Account</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -274,13 +232,11 @@
         $('#deleteModal').modal('show');
     }
 
- function viewHistory() {
-    $('#viewHistoryModal').modal('show');
-}
 
-document.getElementById('confirmViewHistoryButton').addEventListener('click', () => {
-    window.location.href = "TranshistoryServlet";
-});
+    document.getElementById('confirmViewHistoryButton').addEventListener('click', function() {
+        window.location.href = "TranshistoryServlet";
+    });
+
     document.getElementById('togglePassword').addEventListener('click', function () {
         var passwordField = document.getElementById('password');
         var passwordFieldType = passwordField.getAttribute('type');

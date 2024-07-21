@@ -1,9 +1,11 @@
 package servlet;
 
 import controller.CartDAO;
+import controller.UserDAO;
 import model.cartBeans;
 import controller.BookDAO;
 import model.bookBeans;
+import model.userBeans;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -63,22 +65,26 @@ public class AddToCartItemServlet extends HttpServlet {
             return;
         }
 
+        UserDAO userDAO = new UserDAO();
+        userBeans user = userDAO.getUserByUsername(username);
+        if (user == null) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "User not found");
+            return;
+        }
+        int userId = user.getId();
+
         cartBeans cartItem = new cartBeans();
         cartItem.setBookId(bookId);
         cartItem.setBookName(bookName);
         cartItem.setBookPrice(bookPrice);
         cartItem.setBookImage(bookImage);
         cartItem.setQuantity(1); // Default quantity to 1
-        cartItem.setUsername(username);
+        cartItem.setUserId(userId);
 
         CartDAO cartDAO = new CartDAO();
 
         try {
-            if (cartDAO.checkIfItemExists(bookName, username)) {
-                cartDAO.updateItemQuantity(bookName, username, 1);
-            } else {
-                cartDAO.addToCart(cartItem);
-            }
+            cartDAO.addToCart(cartItem);
             response.sendRedirect("cart.jsp");
         } catch (SQLException e) {
             e.printStackTrace();

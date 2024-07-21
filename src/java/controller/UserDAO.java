@@ -10,23 +10,6 @@ import model.userBeans;
 
 public class UserDAO {
 
-    // Method to check if the email is already in use
-    public boolean isEmailUsed(String email) {
-        String sql = "SELECT 1 FROM user_db WHERE email = ?";
-        try (Connection conn = new db().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            System.err.println("Message: " + e.getMessage());
-            return true; // Assume email is used in case of error to prevent duplicate entry
-        }
-    }
-
     // Updated registerUser method to return status strings
     public String registerUser(registerBeans user) {
         if (isEmailUsed(user.getEmail())) {
@@ -51,15 +34,44 @@ public class UserDAO {
         }
     }
 
-    // Method to get user by username
-    public userBeans getUserByUsername(String username) {
-        String sql = "SELECT * FROM user_db WHERE username = ?";
+    // Method to check if the email is already in use
+    public boolean isEmailUsed(String email) {
+        String sql = "SELECT COUNT(*) FROM user_db WHERE email = ?";
+        
         try (Connection conn = new db().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            System.err.println("Message: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Method to get user by username
+    public userBeans getUserByUsername(String username) {
+        String sql = "SELECT u.*, a.address, a.city, a.postal_code " +
+                     "FROM user_db u " +
+                     "LEFT JOIN user_address a ON u.id_user = a.user_id " +
+                     "WHERE u.username = ?";
+        
+        try (Connection conn = new db().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
+            
             if (rs.next()) {
                 userBeans user = new userBeans();
+                user.setId(rs.getInt("id_user"));
                 user.setName(rs.getString("nama_user"));
                 user.setUsername(rs.getString("username"));
                 user.setEmail(rs.getString("email"));
@@ -67,6 +79,7 @@ public class UserDAO {
                 user.setAddress(rs.getString("address"));
                 user.setCity(rs.getString("city"));
                 user.setPostCode(rs.getString("postal_code"));
+                
                 return user;
             }
         } catch (SQLException e) {
@@ -80,66 +93,52 @@ public class UserDAO {
 
     // Method to update user details
     public boolean updateUser(userBeans user) {
-        StringBuilder sqlBuilder = new StringBuilder("UPDATE user_db SET ");
-        boolean first = true;
+        String userSql = "UPDATE user_db SET nama_user = ?, email = ?, password = ? WHERE id_user = ?";
+        String addressCheckSql = "SELECT COUNT(*) FROM user_address WHERE user_id = ?";
+        String addressUpdateSql = "UPDATE user_address SET address = ?, city = ?, postal_code = ? WHERE user_id = ?";
+        String addressInsertSql = "INSERT INTO user_address (user_id, address, city, postal_code) VALUES (?, ?, ?, ?)";
 
-        if (user.getName() != null) {
-            sqlBuilder.append("nama_user = ?");
-            first = false;
-        }
-        if (user.getEmail() != null) {
-            if (!first) sqlBuilder.append(", ");
-            sqlBuilder.append("email = ?");
-            first = false;
-        }
-        if (user.getPassword() != null) {
-            if (!first) sqlBuilder.append(", ");
-            sqlBuilder.append("password = ?");
-            first = false;
-        }
-        if (user.getAddress() != null) {
-            if (!first) sqlBuilder.append(", ");
-            sqlBuilder.append("address = ?");
-            first = false;
-        }
-        if (user.getCity() != null) {
-            if (!first) sqlBuilder.append(", ");
-            sqlBuilder.append("city = ?");
-            first = false;
-        }
-        if (user.getPostCode() != null) {
-            if (!first) sqlBuilder.append(", ");
-            sqlBuilder.append("postal_code = ?");
-        }
+        try (Connection conn = new db().getConnection()) {
+            conn.setAutoCommit(false);
 
-        sqlBuilder.append(" WHERE username = ?");
+            // Update user_db
+            try (PreparedStatement userPs = conn.prepareStatement(userSql)) {
+                userPs.setString(1, user.getName());
+                userPs.setString(2, user.getEmail());
+                userPs.setString(3, user.getPassword());
+                userPs.setInt(4, user.getId());
+                userPs.executeUpdate();
+            }
 
-        try (Connection conn = new db().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sqlBuilder.toString())) {
-            int index = 1;
+            // Check if address entry exists
+            boolean addressExists;
+            try (PreparedStatement addressCheckPs = conn.prepareStatement(addressCheckSql)) {
+                addressCheckPs.setInt(1, user.getId());
+                ResultSet rs = addressCheckPs.executeQuery();
+                addressExists = rs.next() && rs.getInt(1) > 0;
+            }
 
-            if (user.getName() != null) {
-                ps.setString(index++, user.getName());
+            // Update or insert address
+            if (addressExists) {
+                try (PreparedStatement addressPs = conn.prepareStatement(addressUpdateSql)) {
+                    addressPs.setString(1, user.getAddress());
+                    addressPs.setString(2, user.getCity());
+                    addressPs.setString(3, user.getPostCode());
+                    addressPs.setInt(4, user.getId());
+                    addressPs.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement addressPs = conn.prepareStatement(addressInsertSql)) {
+                    addressPs.setInt(1, user.getId());
+                    addressPs.setString(2, user.getAddress());
+                    addressPs.setString(3, user.getCity());
+                    addressPs.setString(4, user.getPostCode());
+                    addressPs.executeUpdate();
+                }
             }
-            if (user.getEmail() != null) {
-                ps.setString(index++, user.getEmail());
-            }
-            if (user.getPassword() != null) {
-                ps.setString(index++, user.getPassword());
-            }
-            if (user.getAddress() != null) {
-                ps.setString(index++, user.getAddress());
-            }
-            if (user.getCity() != null) {
-                ps.setString(index++, user.getCity());
-            }
-            if (user.getPostCode() != null) {
-                ps.setString(index++, user.getPostCode());
-            }
-            ps.setString(index, user.getUsername());
 
-            int result = ps.executeUpdate();
-            return result > 0;
+            conn.commit();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("SQL State: " + e.getSQLState());

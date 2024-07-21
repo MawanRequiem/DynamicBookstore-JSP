@@ -1,10 +1,11 @@
-// TranshistoryServlet.java
 package servlet;
 
 import controller.TransactionDAO;
+import controller.CartDAO;
 import model.transaksiBeans;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,8 +27,18 @@ public class TranshistoryServlet extends HttpServlet {
             return;
         }
 
+        CartDAO cartDAO = new CartDAO();
+        int userId;
+        try {
+            userId = cartDAO.getUserIdByUsername(username);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect("error.jsp");
+            return;
+        }
+
         TransactionDAO transaksiDAO = new TransactionDAO();
-        List<transaksiBeans> transaksiList = transaksiDAO.getTransaksiByUsername(username);
+        List<transaksiBeans> transaksiList = transaksiDAO.getTransaksiByUserId(userId);
 
         request.setAttribute("transaksiList", transaksiList);
         request.getRequestDispatcher("pesanan.jsp").forward(request, response);

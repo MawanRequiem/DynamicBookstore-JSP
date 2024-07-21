@@ -143,7 +143,7 @@
         String username = (String) session.getAttribute("uName");
         boolean isLoggedIn = (username != null);
     %>
-   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #FF7D29;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #FF7D29;">
         <% if (isLoggedIn) { %>
             <span class="navbar-text mr-3">
                 <span class="welcome-text">Welcome</span>
@@ -179,11 +179,8 @@
             <thead>
                 <tr>
                     <th rowspan="2">Order ID</th>
-                    <th rowspan="2">Name</th>
-                    <th rowspan="2">Email</th>
-                    <th rowspan="2">Address</th>
-                    <th rowspan="2">City</th>
-                    <th rowspan="2">Postal Code</th>
+                    <th rowspan="2">User ID</th>
+                        <th rowspan="2">Nama</th>
                     <th rowspan="2">Payment Method</th>
                     <th colspan="2">Books and Quantities</th>
                     <th rowspan="2">Total Price</th>
@@ -204,12 +201,10 @@
                             String[] quantities = transaksi.getQuantities().split(", ");
                 %>
                 <tr>
+              
                     <td rowspan="<%= bookNames.length %>"><%= transaksi.getOrderId() %></td>
-                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getName() %></td>
-                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getEmail() %></td>
-                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getAddress() %></td>
-                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getCity() %></td>
-                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getPostalCode() %></td>
+                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getUserId() %></td>
+                    <td rowspan="<%= bookNames.length %>"><%= transaksi.getUsername() %></td>
                     <td rowspan="<%= bookNames.length %>"><%= transaksi.getPaymentMethod() %></td>
                     <td><%= bookNames[0] %></td>
                     <td><%= quantities[0] %></td>
@@ -222,7 +217,7 @@
                                 <option value="belum_bayar" <%= transaksi.getStatus().equals("belum_bayar") ? "selected" : "" %>>Belum Bayar</option>
                                 <option value="sudah_bayar" <%= transaksi.getStatus().equals("sudah_bayar") ? "selected" : "" %>>Sudah Bayar</option>
                                 <option value="diantar" <%= transaksi.getStatus().equals("diantar") ? "selected" : "" %>>Diantar</option>
-                                  <option value="diterima" <%= transaksi.getStatus().equals("diterima") ? "selected" : "" %>>Diterima</option>
+                                <option value="diterima" <%= transaksi.getStatus().equals("diterima") ? "selected" : "" %>>Diterima</option>
                                 <option value="gagal" <%= transaksi.getStatus().equals("gagal") ? "selected" : "" %>>Gagal</option>
                             </select>
                         </form>

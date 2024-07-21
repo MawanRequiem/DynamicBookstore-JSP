@@ -6,7 +6,6 @@ import model.cartBeans;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,47 +17,50 @@ public class CartDAO {
             connection = new db().getConnection();
             return connection;
         } catch (SQLException ex) {
-            Logger.getLogger(BookDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CartDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return connection;
     }
 
     public void addToCart(cartBeans cart) throws SQLException {
-        String query = "INSERT INTO keranjang (gambar_buku, nama_buku, harga, total_beli, username) VALUES (?, ?, ?, ?, ?)";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setBlob(1, cart.getBookImage());
-            ps.setString(2, cart.getBookName());
-            ps.setDouble(3, cart.getBookPrice());
-            ps.setInt(4, cart.getQuantity());
-            ps.setString(5, cart.getUsername());
-            ps.executeUpdate();
-        }
-    }
-
-    public List<cartBeans> getCartItems(String username) throws SQLException {
-    List<cartBeans> cartItems = new ArrayList<>();
-    String query = "SELECT k.*, b.stock_buku FROM keranjang k JOIN buku b ON k.nama_buku = b.nama_buku WHERE k.username = ?";
-    try (Connection connection = getConnection();
-         PreparedStatement ps = connection.prepareStatement(query)) {
-        ps.setString(1, username);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                cartBeans book = new cartBeans();
-                book.setId(rs.getInt("id_keranjang"));
-                book.setBookName(rs.getString("nama_buku"));
-                book.setBookPrice(rs.getDouble("harga"));
-                book.setQuantity(rs.getInt("total_beli"));
-                book.setBookImage(rs.getBlob("gambar_buku").getBinaryStream());
-                book.setStock(rs.getInt("stock_buku")); // Set stock
-                cartItems.add(book);
+        if (checkIfItemExists(cart.getBookId(), cart.getUserId())) {
+            updateItemQuantity(cart.getBookId(), cart.getUserId(), cart.getQuantity());
+        } else {
+            String query = "INSERT INTO keranjang (user_id, book_id, total_beli) VALUES (?, ?, ?)";
+            try (Connection connection = getConnection();
+                 PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, cart.getUserId());
+                ps.setInt(2, cart.getBookId());
+                ps.setInt(3, cart.getQuantity());
+                ps.executeUpdate();
             }
         }
     }
-    return cartItems;
-}
 
-
+    public List<cartBeans> getCartItems(int userId) throws SQLException {
+        List<cartBeans> cartItems = new ArrayList<>();
+        String query = "SELECT k.id_keranjang, k.total_beli, b.nama_buku, b.harga_buku, b.gambar_buku, b.stock_buku " +
+                       "FROM keranjang k " +
+                       "JOIN buku b ON k.book_id = b.id_buku " +
+                       "WHERE k.user_id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    cartBeans book = new cartBeans();
+                    book.setId(rs.getInt("id_keranjang"));
+                    book.setBookName(rs.getString("nama_buku"));
+                    book.setBookPrice(rs.getDouble("harga_buku"));
+                    book.setQuantity(rs.getInt("total_beli"));
+                    book.setBookImage(rs.getBlob("gambar_buku").getBinaryStream());
+                    book.setStock(rs.getInt("stock_buku"));
+                    cartItems.add(book);
+                }
+            }
+        }
+        return cartItems;
+    }
 
     public List<cartBeans> getSelectedItems(List<Integer> itemIds) throws SQLException {
         List<cartBeans> selectedItems = new ArrayList<>();
@@ -66,7 +68,7 @@ public class CartDAO {
             return selectedItems;
         }
 
-        StringBuilder query = new StringBuilder("SELECT * FROM keranjang WHERE id_keranjang IN (");
+        StringBuilder query = new StringBuilder("SELECT k.*, b.nama_buku, b.harga_buku, b.gambar_buku FROM keranjang k JOIN buku b ON k.book_id = b.id_buku WHERE k.id_keranjang IN (");
         for (int i = 0; i < itemIds.size(); i++) {
             query.append("?");
             if (i < itemIds.size() - 1) {
@@ -85,7 +87,7 @@ public class CartDAO {
                     cartBeans item = new cartBeans();
                     item.setId(rs.getInt("id_keranjang"));
                     item.setBookName(rs.getString("nama_buku"));
-                    item.setBookPrice(rs.getDouble("harga"));
+                    item.setBookPrice(rs.getDouble("harga_buku"));
                     item.setQuantity(rs.getInt("total_beli"));
                     item.setBookImage(rs.getBlob("gambar_buku").getBinaryStream());
                     selectedItems.add(item);
@@ -96,7 +98,7 @@ public class CartDAO {
     }
 
     public cartBeans getCartItemById(int id) throws SQLException {
-        String query = "SELECT * FROM keranjang WHERE id_keranjang = ?";
+        String query = "SELECT k.*, b.nama_buku, b.harga_buku, b.gambar_buku FROM keranjang k JOIN buku b ON k.book_id = b.id_buku WHERE k.id_keranjang = ?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, id);
@@ -104,8 +106,8 @@ public class CartDAO {
                 if (rs.next()) {
                     cartBeans item = new cartBeans();
                     item.setId(rs.getInt("id_keranjang"));
-                    item.setBookName(rs.getString("nama_buku"));
-                    item.setBookPrice(rs.getDouble("harga"));
+                    item.setBookId(rs.getInt("book_id"));
+                    item.setBookPrice(rs.getDouble("harga_buku"));
                     item.setQuantity(rs.getInt("total_beli"));
                     item.setBookImage(rs.getBlob("gambar_buku").getBinaryStream());
                     return item;
@@ -115,11 +117,11 @@ public class CartDAO {
         return null;
     }
 
-    public double getTotalPrice(String username) throws SQLException {
-        String query = "SELECT SUM(harga * total_beli) as total FROM keranjang WHERE username = ?";
+    public double getTotalPrice(int userId) throws SQLException {
+        String query = "SELECT SUM(b.harga_buku * k.total_beli) as total FROM keranjang k JOIN buku b ON k.book_id = b.id_buku WHERE k.user_id = ?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, username);
+            ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getDouble("total");
@@ -148,12 +150,12 @@ public class CartDAO {
         }
     }
 
-    public boolean checkIfItemExists(String bookName, String username) throws SQLException {
-        String query = "SELECT id_keranjang, total_beli FROM keranjang WHERE nama_buku = ? AND username = ?";
+    public boolean checkIfItemExists(int bookId, int userId) throws SQLException {
+        String query = "SELECT id_keranjang, total_beli FROM keranjang WHERE book_id = ? AND user_id = ?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, bookName);
-            ps.setString(2, username);
+            ps.setInt(1, bookId);
+            ps.setInt(2, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return true;
@@ -163,35 +165,44 @@ public class CartDAO {
         return false;
     }
 
-    public void updateItemQuantity(String bookName, String username, int quantity) throws SQLException {
-        String query = "UPDATE keranjang SET total_beli = total_beli + ? WHERE nama_buku = ? AND username = ?";
+    public void updateItemQuantity(int bookId, int userId, int quantity) throws SQLException {
+        String query = "UPDATE keranjang SET total_beli = total_beli + ? WHERE book_id = ? AND user_id = ?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, quantity);
-            ps.setString(2, bookName);
-            ps.setString(3, username);
+            ps.setInt(2, bookId);
+            ps.setInt(3, userId);
             ps.executeUpdate();
         }
     }
 
-    public void updateItemSelection(int cartId, boolean selected) throws SQLException {
-        String query = "UPDATE keranjang SET selected = ? WHERE id_keranjang = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setBoolean(1, selected);
-            ps.setInt(2, cartId);
-            ps.executeUpdate();
+    public void clearSelectedItems(List<Integer> itemIds) throws SQLException {
+        if (itemIds == null || itemIds.isEmpty()) {
+            return;
         }
-    }
 
-    public void clearCart(Map<String, Integer> selectedItemQuantities) throws SQLException {
-        String query = "DELETE FROM keranjang WHERE nama_buku = ?";
+        String query = "DELETE FROM keranjang WHERE id_keranjang = ?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
-           for (Map.Entry<String, Integer> entry : selectedItemQuantities.entrySet()) {
-                                    ps.setString(1, entry.getKey());
-                                    ps.executeUpdate();
+            for (int itemId : itemIds) {
+                ps.setInt(1, itemId);
+                ps.addBatch();
+            }
+            ps.executeBatch();
         }
     }
+    
+    public int getUserIdByUsername(String username) throws SQLException {
+        String query = "SELECT id_user FROM user_db WHERE username = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id_user");
+                }
+            }
+        }
+        return -1; // Return -1 if user is not found
     }
 }

@@ -152,7 +152,7 @@
                 Anda tidak mengganti data akun Anda.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='update.jsp'">OK</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='detail.jsp'">OK</button>
             </div>
         </div>
     </div>
@@ -174,7 +174,7 @@
         if (updateSuccess === 'true') {
             $('#updateSuccessModal').modal('show');
             $('#updateSuccessModal').on('hidden.bs.modal', function () {
-                window.location.href = 'detail.jsp'; // Arahkan ke index.jsp setelah modal ditutup
+                window.location.href = 'index.jsp'; // Arahkan ke index.jsp setelah modal ditutup
             });
         } else if (updateSuccess === 'false') {
             alert('Gagal memperbarui data. Silakan coba lagi.');

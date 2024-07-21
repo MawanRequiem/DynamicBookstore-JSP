@@ -1,43 +1,43 @@
 package model;
 
+import java.io.InputStream;
 import java.sql.Timestamp;
 
 public class transaksiBeans {
     private int orderItem;
     private int orderId;
-    private String username;
-    private String name;
-    private String email;
-    private String address;
-    private String city;
-    private String postalCode;
+    private int userId;
     private String paymentMethod;
     private double totalPrice;
     private Timestamp orderDate;
     private String status;
     private String kodePembayaran;
+    private InputStream buktiBayar;
+    private Timestamp expiryTime;
+    private boolean isStockReturned;
     private String bookNames; // Combined book names
     private String quantities; // Combined quantities
-    private Timestamp expiryTime; // New field for expiry time
-    private boolean isStockReturned; // New field for stock returned status
+    private String bookIds;
+    private String username;
 
-    public Timestamp getExpiryTime() {
-        return expiryTime;
-    }
-
-    public void setExpiryTime(Timestamp expiryTime) {
-        this.expiryTime = expiryTime;
-    }
-
-    public boolean isStockReturned() {
+    public boolean isIsStockReturned() {
         return isStockReturned;
     }
 
-    public void setStockReturned(boolean isStockReturned) {
+    public void setIsStockReturned(boolean isStockReturned) {
         this.isStockReturned = isStockReturned;
     }
 
-    // Getters and Setters for all fields
+    public String getBookIds() {
+        return bookIds;
+    }
+
+    public void setBookIds(String bookIds) {
+        this.bookIds = bookIds;
+    }
+
+
+
     public int getOrderItem() {
         return orderItem;
     }
@@ -54,52 +54,12 @@ public class transaksiBeans {
         this.orderId = orderId;
     }
 
-    public String getUsername() {
-        return username;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getPaymentMethod() {
@@ -142,6 +102,30 @@ public class transaksiBeans {
         this.kodePembayaran = kodePembayaran;
     }
 
+    public InputStream getBuktiBayar() {
+        return buktiBayar;
+    }
+
+    public void setBuktiBayar(InputStream buktiBayar) {
+        this.buktiBayar = buktiBayar;
+    }
+
+    public Timestamp getExpiryTime() {
+        return expiryTime;
+    }
+
+    public void setExpiryTime(Timestamp expiryTime) {
+        this.expiryTime = expiryTime;
+    }
+
+    public boolean isStockReturned() {
+        return isStockReturned;
+    }
+
+    public void setStockReturned(boolean isStockReturned) {
+        this.isStockReturned = isStockReturned;
+    }
+
     public String getBookNames() {
         return bookNames;
     }
@@ -156,5 +140,15 @@ public class transaksiBeans {
 
     public void setQuantities(String quantities) {
         this.quantities = quantities;
+    
+    }
+    
+    
+      public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

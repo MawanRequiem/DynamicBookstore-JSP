@@ -1,20 +1,14 @@
 package servlet;
+
 import controller.CartDAO;
-import model.cartBeans;
-import controller.BookDAO;
-import model.bookBeans;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
 import java.sql.SQLException;
-
 
 @WebServlet(name = "UpdateCartServlet", urlPatterns = {"/UpdateCartServlet"})
 public class UpdateCartItemServlet extends HttpServlet {
@@ -68,6 +62,7 @@ public class UpdateCartItemServlet extends HttpServlet {
         cartDAO.updateCartItem(cartId, quantity);
         response.sendRedirect("cart.jsp");
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

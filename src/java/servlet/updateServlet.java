@@ -27,6 +27,20 @@ public class updateServlet extends HttpServlet {
             return;
         }
 
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.isEmpty()) {
+            response.sendRedirect("detail.jsp?updateSuccess=false");
+            return;
+        }
+        
+        int userId;
+        try {
+            userId = Integer.parseInt(idParam);
+        } catch (NumberFormatException e) {
+            response.sendRedirect("detail.jsp?updateSuccess=false");
+            return;
+        }
+
         String newName = request.getParameter("name");
         String newEmail = request.getParameter("email");
         String newPassword = request.getParameter("password");
@@ -38,14 +52,13 @@ public class updateServlet extends HttpServlet {
         userBeans user = userDAO.getUserByUsername(currentUsername);
 
         if (user != null) {
-            // Check for changes
+            user.setId(userId); // Set user ID
             boolean hasChanges = false;
 
-            // Check if the new email is already in use
             if (newEmail != null && !newEmail.equals(user.getEmail())) {
                 if (userDAO.isEmailUsed(newEmail)) {
                     request.setAttribute("errorMessage", "Email sudah digunakan.");
-                    request.getRequestDispatcher("update.jsp").forward(request, response);
+                    request.getRequestDispatcher("detail.jsp").forward(request, response);
                     return;
                 }
                 user.setEmail(newEmail);
@@ -77,12 +90,12 @@ public class updateServlet extends HttpServlet {
 
                 if (success) {
                     session.setAttribute("uName", user.getUsername());
-                    response.sendRedirect("update.jsp?updateSuccess=true");
+                    response.sendRedirect("detail.jsp?updateSuccess=true");
                 } else {
-                    response.sendRedirect("update.jsp?updateSuccess=false");
+                    response.sendRedirect("detail.jsp?updateSuccess=false");
                 }
             } else {
-                response.sendRedirect("update.jsp?noChanges=true");
+                response.sendRedirect("detail.jsp?noChanges=true");
             }
         } else {
             response.sendRedirect("login.jsp");

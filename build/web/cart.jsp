@@ -1,7 +1,7 @@
 <%@page import="model.cartBeans"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="controller.CartDAO, model.cartBeans, java.sql.Connection" %>
+<%@ page import="controller.CartDAO, controller.UserDAO, model.userBeans, model.cartBeans, java.sql.Connection" %>
 <%@ page import="javax.servlet.http.HttpSession" %>
 <%
     String username = (String) session.getAttribute("uName");
@@ -10,9 +10,16 @@
         return;
     }
 
-    Connection connection = (Connection) getServletContext().getAttribute("DBConnection");
+    UserDAO userDAO = new UserDAO();
+    userBeans user = userDAO.getUserByUsername(username);
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
+    int userId = user.getId();
     CartDAO cartDAO = new CartDAO();
-    List<cartBeans> cartItems = cartDAO.getCartItems(username);
+    List<cartBeans> cartItems = cartDAO.getCartItems(userId);
 %>
 <!DOCTYPE html>
 <html>
@@ -131,32 +138,20 @@
             min-width: 100px;
         }
         .btn-danger {
-        color: #fff;
-        background-color: red;
-        border-color: red;
-        }  
-        .btn-success {
-        color: #fff;
-        background-color: green;
-        border-color: green;
+            color: #fff;
+            background-color: red;
+            border-color: red;
         }
-        
-        .modal-content {
-    padding: 20px;
-}
-.modal-footer .btn {
-    min-width: 100px;
-}
-.btn-danger {
-    color: #fff;
-    background-color: red;
-    border-color: red;
-}
-.btn-light {
-    color: #000;
-    background-color: #fff;
-    border-color: #dee2e6;
-}
+        .btn-success {
+            color: #fff;
+            background-color: green;
+            border-color: green;
+        }
+        .btn-light {
+            color: #000;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
     </style>
 </head>
 <body>

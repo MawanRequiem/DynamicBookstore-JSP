@@ -8,6 +8,17 @@ public class userBeans {
     private String address;
     private String city;
     private String postCode;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    
 
     public String getPostCode() {
         return postCode;

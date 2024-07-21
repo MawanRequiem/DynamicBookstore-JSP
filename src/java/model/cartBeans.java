@@ -12,8 +12,8 @@ public class cartBeans {
     private double bookPrice;
     private InputStream bookImage;
     private int quantity;
-    private String username;
-    private int stock; // New field
+    private int userId;
+    private int stock;
 
     // Getters and Setters
     public int getId() {
@@ -58,11 +58,11 @@ public class cartBeans {
         this.quantity = quantity;
     }
 
-    public String getUsername() {
-        return username;
+    public int getUserId() {
+        return userId;
     }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getStock() {

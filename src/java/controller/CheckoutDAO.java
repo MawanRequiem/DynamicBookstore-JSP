@@ -1,14 +1,20 @@
 package controller;
 
 import db.db;
-import java.sql.*;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Random;
 
 public class CheckoutDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(CheckoutDAO.class.getName());
 
     public Connection getConnection() {
         Connection connection = null;
@@ -16,7 +22,7 @@ public class CheckoutDAO {
             connection = new db().getConnection();
             return connection;
         } catch (SQLException ex) {
-            Logger.getLogger(CheckoutDAO.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error establishing connection", ex);
         }
         return connection;
     }
@@ -31,33 +37,31 @@ public class CheckoutDAO {
         return kodePembayaran.toString();
     }
 
-    public boolean placeOrder(String username, String name, String email, String address, String city, String postalCode, double total_price, String paymentMethod, Map<String, Integer> selectedItemQuantities, Timestamp expiryTime) throws SQLException {
+    public boolean placeOrder(int userId, String name, String email, String address, String city, String postalCode, double total_price, String paymentMethod, Map<Integer, Integer> selectedItemQuantities, Timestamp expiryTime) throws SQLException {
         try (Connection connection = getConnection()) {
             if (connection == null) {
+                LOGGER.log(Level.SEVERE, "Failed to establish connection");
                 return false;
             }
 
             connection.setAutoCommit(false); // Start transaction
 
             // Insert order details
-            String insertOrderQuery = "INSERT INTO orders (username, name, email, address, city, postal_code, payment_method, total_price, status, kodepembayaran, expiry_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertOrderQuery = "INSERT INTO orders (user_id, payment_method, total_price, order_date, status, kodepembayaran, expiry_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
             String kodePembayaran = generateRandomKodePembayaran();
             String status = "belum_bayar";
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertOrderQuery, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, name);
-                preparedStatement.setString(3, email);
-                preparedStatement.setString(4, address);
-                preparedStatement.setString(5, city);
-                preparedStatement.setString(6, postalCode);
-                preparedStatement.setString(7, paymentMethod);
-                preparedStatement.setDouble(8, total_price);
-                preparedStatement.setString(9, status);
-                preparedStatement.setString(10, kodePembayaran);
-                preparedStatement.setTimestamp(11, expiryTime);
+                preparedStatement.setInt(1, userId);
+                preparedStatement.setString(2, paymentMethod);
+                preparedStatement.setDouble(3, total_price);
+                preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                preparedStatement.setString(5, status);
+                preparedStatement.setString(6, kodePembayaran);
+                preparedStatement.setTimestamp(7, expiryTime);
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows == 0) {
                     connection.rollback();
+                    LOGGER.log(Level.SEVERE, "Failed to insert order details");
                     return false;
                 }
 
@@ -66,23 +70,38 @@ public class CheckoutDAO {
                         int orderId = generatedKeys.getInt(1);
 
                         // Insert order items and reduce stock
-                        String insertOrderItemsQuery = "INSERT INTO ordersitems (order_id, book_name, kuantitas) VALUES (?, ?, ?)";
-                        String updateStockQuery = "UPDATE buku SET stock_buku = stock_buku - ? WHERE nama_buku = ?";
+                        String insertOrderItemsQuery = "INSERT INTO orderitems (order_id, book_id, kuantitas) VALUES (?, ?, ?)";
+                        String updateStockQuery = "UPDATE buku SET stock_buku = stock_buku - ? WHERE id_buku = ?";
                         try (PreparedStatement orderItemsStatement = connection.prepareStatement(insertOrderItemsQuery);
                              PreparedStatement updateStockStatement = connection.prepareStatement(updateStockQuery)) {
-                            for (Map.Entry<String, Integer> entry : selectedItemQuantities.entrySet()) {
-                                String bookName = entry.getKey();
+                            for (Map.Entry<Integer, Integer> entry : selectedItemQuantities.entrySet()) {
+                                int bookId = entry.getKey();
                                 int quantity = entry.getValue();
+                                if (bookId <= 0) {
+                                    LOGGER.log(Level.SEVERE, "Invalid Book ID: {0}", bookId);
+                                    continue;
+                                }
+                                if (quantity <= 0) {
+                                    LOGGER.log(Level.SEVERE, "Invalid quantity for Book ID {0}: {1}", new Object[]{bookId, quantity});
+                                    continue;
+                                }
+
+                                // Verify that the book ID exists
+                                if (!doesBookExist(connection, bookId)) {
+                                    connection.rollback();
+                                    LOGGER.log(Level.SEVERE, "Book ID {0} does not exist", bookId);
+                                    return false;
+                                }
 
                                 // Insert order item
                                 orderItemsStatement.setInt(1, orderId);
-                                orderItemsStatement.setString(2, bookName);
+                                orderItemsStatement.setInt(2, bookId);
                                 orderItemsStatement.setInt(3, quantity);
                                 orderItemsStatement.addBatch();
 
                                 // Reduce stock
                                 updateStockStatement.setInt(1, quantity);
-                                updateStockStatement.setString(2, bookName);
+                                updateStockStatement.setInt(2, bookId);
                                 updateStockStatement.addBatch();
                             }
 
@@ -91,27 +110,41 @@ public class CheckoutDAO {
                             for (int result : batchResult) {
                                 if (result == Statement.EXECUTE_FAILED) {
                                     connection.rollback();
+                                    LOGGER.log(Level.SEVERE, "Failed to insert order items");
                                     return false;
                                 }
                             }
                             for (int result : stockUpdateResult) {
                                 if (result == Statement.EXECUTE_FAILED) {
                                     connection.rollback();
-                                    return false; // Stock update failed
+                                    LOGGER.log(Level.SEVERE, "Failed to update stock");
+                                    return false;
                                 }
                             }
                         }
                     } else {
                         connection.rollback();
+                        LOGGER.log(Level.SEVERE, "Failed to retrieve order ID");
                         return false;
                     }
                 }
             }
             connection.commit(); // Commit transaction
+            LOGGER.log(Level.INFO, "Order placed successfully for User ID: {0}", userId);
         } catch (SQLException e) {
-            Logger.getLogger(CheckoutDAO.class.getName()).log(Level.SEVERE, null, e);
+            LOGGER.log(Level.SEVERE, "Error placing order", e);
             return false;
         }
         return true;
+    }
+
+    private boolean doesBookExist(Connection connection, int bookId) throws SQLException {
+        String query = "SELECT id_buku FROM buku WHERE id_buku = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }
